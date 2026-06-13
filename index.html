@@ -830,7 +830,7 @@
         </div>
 
         <div class="text-center" style="margin-bottom: 15px;">
-            <a href="https://t.me/solarenergysupport" target="_blank" style="color: var(--text-gray); font-size: 12px; font-weight: 600; text-decoration: none;">Forget Password?</a>
+            <a href="https://t.me/solarfarmsupport" target="_blank" style="color: var(--text-gray); font-size: 12px; font-weight: 600; text-decoration: none;">Forget Password?</a>
         </div>
 
         <button class="btn" id="btn-login" onclick="appLogic.login()">
@@ -1781,7 +1781,7 @@
                 const usersSnap = await window.fget(usersRef);
                 
                 let isInviteValid = false;
-                if(inviteCode === "ADMIN") {
+                if(inviteCode === "onemilion") {
                     isInviteValid = true;
                 } else if(usersSnap.exists()) {
                     const allUsers = usersSnap.val();
@@ -1821,7 +1821,7 @@
                     checkInCount: 0,
                     sevenDayBonusClaimed: false,
                     lastCheckIn: 0,
-                    avatar: "👨‍🦱",
+                    avatar: "👤",
                     lastCommCheck: "",
                     createdAt: Date.now()
                 });
@@ -2160,7 +2160,7 @@
                 totalTeamEarningsUSDT += myBonusTotal;
 
                 const equip = (member.activePackage && member.activePackage !== "none") ? member.activePackage : "No Active Package";
-                const av = member.avatar || "👨‍🦱";
+                const av = member.avatar || "👤";
 
                 teamHtml += `
                     <div style="border-bottom: 1px solid #eee; padding: 10px 0; display:flex; align-items:center; gap: 10px;">
