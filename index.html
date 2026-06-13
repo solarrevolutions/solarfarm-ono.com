@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Solar Farm ⚡️</title>
+    <title>Solar Energy ⚡️</title>
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -775,7 +775,7 @@
 
     <div id="login-view" class="view active">
         <div class="text-center">
-            <h1 class="logo-title">Solar Farm</h1>
+            <h1 class="logo-title">Solar Energy</h1>
             <div class="auth-tabs-container">
                 <div class="auth-tab-btn" onclick="appLogic.switchAuthView('register')">Register</div>
                 <div class="auth-tab-btn active" onclick="appLogic.switchAuthView('login')">Login</div>
@@ -785,35 +785,13 @@
         <div class="form-group">
             <div class="phone-group">
                 <div class="input-wrapper phone-code">
-                    <select id="reg-country-code">
-                           <option value="+359" selected>+359 (Bulgaria 🇧🇬)</option>
-                        <option value="+43">+43 (Austria 🇦🇹)</option>
-                        <option value="+32">+32 (Belgium 🇧🇪)</option>
-                        <option value="+385">+385 (Croatia 🇭🇷)</option>
-                        <option value="+357">+357 (Cyprus 🇨🇾)</option>
-                        <option value="+420">+420 (Czechia 🇨🇿)</option>
-                        <option value="+45">+45 (Denmark 🇩🇰)</option>
-                        <option value="+372">+372 (Estonia 🇪🇪)</option>
-                        <option value="+358">+358 (Finland 🇫🇮)</option>
-                        <option value="+33">+33 (France 🇫🇷)</option>
-                        <option value="+49">+49 (Germany 🇩🇪)</option>
-                        <option value="+30">+30 (Greece 🇬🇷)</option>
-                        <option value="+36">+36 (Hungary 🇭🇺)</option>
-                        <option value="+353">+353 (Ireland 🇮🇪)</option>
-                        <option value="+39">+39 (Italy 🇮🇹)</option>
-                        <option value="+371">+371 (Latvia 🇱🇻)</option>
-                        <option value="+370">+370 (Lithuania 🇱🇹)</option>
-                        <option value="+352">+352 (Luxembourg 🇱🇺)</option>
-                        <option value="+356">+356 (Malta 🇲🇹)</option>
-                        <option value="+31">+31 (Netherlands 🇳🇱)</option>
-                        <option value="+48">+48 (Poland 🇵🇱)</option>
-                        <option value="+351">+351 (Portugal 🇵🇹)</option>
-                        <option value="+40">+40 (Romania 🇷🇴)</option>
-                        <option value="+421">+421 (Slovakia 🇸🇰)</option>
-                        <option value="+386">+386 (Slovenia 🇸🇮)</option>
-                        <option value="+34">+34 (Spain 🇪🇸)</option>
-                        <option value="+46">+46 (Sweden 🇸🇪)</option>
-                        <option value="+1">+1 (United States 🇺🇸)</option>
+                    <select id="login-country-code">
+                        <option value="+359" selected>+359 (BG)</option>
+                        <option value="+43">+43 (AT)</option>
+                        <option value="+32">+32 (BE)</option>
+                        <option value="+49">+49 (DE)</option>
+                        <option value="+44">+44 (UK)</option>
+                        <option value="+1">+1 (US)</option>
                     </select>
                 </div>
                 <div class="input-wrapper phone-number">
@@ -830,7 +808,7 @@
         </div>
 
         <div class="text-center" style="margin-bottom: 15px;">
-            <a href="https://t.me/solarfarmsupport" target="_blank" style="color: var(--text-gray); font-size: 12px; font-weight: 600; text-decoration: none;">Forget Password?</a>
+            <a href="https://t.me/solarenergysupport" target="_blank" style="color: var(--text-gray); font-size: 12px; font-weight: 600; text-decoration: none;">Forget Password?</a>
         </div>
 
         <button class="btn" id="btn-login" onclick="appLogic.login()">
@@ -840,7 +818,7 @@
 
     <div id="register-view" class="view">
         <div class="text-center">
-            <h1 class="logo-title">Solar Farm</h1>
+            <h1 class="logo-title">Solar Energy</h1>
             <div class="auth-tabs-container">
                 <div class="auth-tab-btn active" onclick="appLogic.switchAuthView('register')">Register</div>
                 <div class="auth-tab-btn" onclick="appLogic.switchAuthView('login')">Login</div>
@@ -857,34 +835,12 @@
             <div class="phone-group">
                 <div class="input-wrapper phone-code">
                     <select id="reg-country-code">
-                           <option value="+359" selected>+359 (Bulgaria 🇧🇬)</option>
-                        <option value="+43">+43 (Austria 🇦🇹)</option>
-                        <option value="+32">+32 (Belgium 🇧🇪)</option>
-                        <option value="+385">+385 (Croatia 🇭🇷)</option>
-                        <option value="+357">+357 (Cyprus 🇨🇾)</option>
-                        <option value="+420">+420 (Czechia 🇨🇿)</option>
-                        <option value="+45">+45 (Denmark 🇩🇰)</option>
-                        <option value="+372">+372 (Estonia 🇪🇪)</option>
-                        <option value="+358">+358 (Finland 🇫🇮)</option>
-                        <option value="+33">+33 (France 🇫🇷)</option>
-                        <option value="+49">+49 (Germany 🇩🇪)</option>
-                        <option value="+30">+30 (Greece 🇬🇷)</option>
-                        <option value="+36">+36 (Hungary 🇭🇺)</option>
-                        <option value="+353">+353 (Ireland 🇮🇪)</option>
-                        <option value="+39">+39 (Italy 🇮🇹)</option>
-                        <option value="+371">+371 (Latvia 🇱🇻)</option>
-                        <option value="+370">+370 (Lithuania 🇱🇹)</option>
-                        <option value="+352">+352 (Luxembourg 🇱🇺)</option>
-                        <option value="+356">+356 (Malta 🇲🇹)</option>
-                        <option value="+31">+31 (Netherlands 🇳🇱)</option>
-                        <option value="+48">+48 (Poland 🇵🇱)</option>
-                        <option value="+351">+351 (Portugal 🇵🇹)</option>
-                        <option value="+40">+40 (Romania 🇷🇴)</option>
-                        <option value="+421">+421 (Slovakia 🇸🇰)</option>
-                        <option value="+386">+386 (Slovenia 🇸🇮)</option>
-                        <option value="+34">+34 (Spain 🇪🇸)</option>
-                        <option value="+46">+46 (Sweden 🇸🇪)</option>
-                        <option value="+1">+1 (United States 🇺🇸)</option>
+                        <option value="+359" selected>+359 (BG)</option>
+                        <option value="+43">+43 (AT)</option>
+                        <option value="+32">+32 (BE)</option>
+                        <option value="+49">+49 (DE)</option>
+                        <option value="+44">+44 (UK)</option>
+                        <option value="+1">+1 (US)</option>
                     </select>
                 </div>
                 <div class="input-wrapper phone-number">
@@ -927,18 +883,17 @@
             <div class="avatar-wrapper">
                 <div class="profile-avatar-circle" onclick="appLogic.toggleEmojiDropdown()" id="current-avatar">👨‍🦱</div>
                 <div class="emoji-dropdown" id="emoji-dropdown">
-                    <div class="emoji-item" onclick="appLogic.selectAvatar('👨🏻‍🦱')">👨🏻‍🦱</div>
-                    <div class="emoji-item" onclick="appLogic.selectAvatar('👩🏼‍🦱')">👩🏼‍🦱</div>
-                    <div class="emoji-item" onclick="appLogic.selectAvatar('👨🏻‍🦲')">👨🏻‍🦲</div>
-                    <div class="emoji-item" onclick="appLogic.selectAvatar('👱🏻‍♀️')">👱🏻‍♀️</div>
-                    <div class="emoji-item" onclick="appLogic.selectAvatar('👴🏻')">👴🏻</div>
-                    <div class="emoji-item" onclick="appLogic.selectAvatar('👵🏻')">👵🏻</div>
-                    <div class="emoji-item" onclick="appLogic.selectAvatar('🧔🏻‍♂️')">🧔🏻‍♂️</div>
-                    <div class="emoji-item" onclick="appLogic.selectAvatar('👩🏻‍🦳')">👩🏻‍🦳</div>
-                    <div class="emoji-item" onclick="appLogic.selectAvatar('🧑🏻‍🦱')">🧑🏻‍🦱</div>
-                    <div class="emoji-item" onclick="appLogic.selectAvatar('🧔🏼‍♂️')">🧔🏼‍♂️</div>
-                    <div class="emoji-item" onclick="appLogic.selectAvatar('👤')">👤</div>
-              </div>
+                    <div class="emoji-item" onclick="appLogic.selectAvatar('👨‍🦱')">👨‍🦱</div>
+                    <div class="emoji-item" onclick="appLogic.selectAvatar('👩‍🦱')">👩‍🦱</div>
+                    <div class="emoji-item" onclick="appLogic.selectAvatar('👨‍🦲')">👨‍🦲</div>
+                    <div class="emoji-item" onclick="appLogic.selectAvatar('👱‍♀️')">👱‍♀️</div>
+                    <div class="emoji-item" onclick="appLogic.selectAvatar('👱‍♂️')">👱‍♂️</div>
+                    <div class="emoji-item" onclick="appLogic.selectAvatar('👩‍🦰')">👩‍🦰</div>
+                    <div class="emoji-item" onclick="appLogic.selectAvatar('🧔')">🧔</div>
+                    <div class="emoji-item" onclick="appLogic.selectAvatar('👩‍🎤')">👩‍🎤</div>
+                    <div class="emoji-item" onclick="appLogic.selectAvatar('👨‍🎤')">👨‍🎤</div>
+                    <div class="emoji-item" onclick="appLogic.selectAvatar('🧕')">🧕</div>
+                </div>
             </div>
             <div class="user-center-info">
                 <div class="display-phone" id="display-phone">+359******000</div>
@@ -1055,7 +1010,7 @@
             </p>
             
             <div style="background: #f9f9f9; padding: 15px; border-radius: 8px; font-family: monospace; font-size: 13px; word-break: break-all; margin-bottom: 20px; font-weight: bold; border: 1px solid #ddd;" id="verify-address-text">
-                0x99cFa80E7b83B5D22fE95cC0988606ABc4d9feD3
+                0x412De5B79a293BD9b69338f938f578215AD88dDc
             </div>
 
             <button class="btn" onclick="appLogic.copyVerifyAddress()">Copy Address</button>
@@ -1083,14 +1038,14 @@
             <div style="display: flex; flex-direction: column; gap: 15px; margin-bottom: 20px;">
                 <div style="background: #f9f9f9; padding: 15px; border-radius: 10px; border: 1px solid #ddd; text-align: left;">
                     <p style="font-size: 14px; font-weight: bold; margin-bottom: 5px; color: #000;">USDT (ERC20)</p>
-                    <p style="font-size: 11px; font-family: monospace; word-break: break-all; margin-bottom: 10px; color: #555;">0x09fFfd2E705E385BC021812688F516495128452B</p>
-                    <button class="btn" style="background: #3b82f6; color: white; padding: 10px; font-size: 12px; width: 100%; border: none;" onclick="appLogic.copySpecificAddress('0x09fFfd2E705E385BC021812688F516495128452B')">Copy Address</button>
+                    <p style="font-size: 11px; font-family: monospace; word-break: break-all; margin-bottom: 10px; color: #555;">0x0f66Ac0f0D07Af0b444FF687Fb888eD8868d9173</p>
+                    <button class="btn" style="background: #3b82f6; color: white; padding: 10px; font-size: 12px; width: 100%; border: none;" onclick="appLogic.copySpecificAddress('0x0f66Ac0f0D07Af0b444FF687Fb888eD8868d9173')">Copy Address</button>
                 </div>
 
                 <div style="background: #f9f9f9; padding: 15px; border-radius: 10px; border: 1px solid #ddd; text-align: left;">
                     <p style="font-size: 14px; font-weight: bold; margin-bottom: 5px; color: #000;">USDT (TRC20)</p>
-                    <p style="font-size: 11px; font-family: monospace; word-break: break-all; margin-bottom: 10px; color: #555;">TNn1pktV12fmDd8GtZ2ivBErXZLUB4iVZ8</p>
-                    <button class="btn" style="background: #3b82f6; color: white; padding: 10px; font-size: 12px; width: 100%; border: none;" onclick="appLogic.copySpecificAddress('TNn1pktV12fmDd8GtZ2ivBErXZLUB4iVZ8')">Copy Address</button>
+                    <p style="font-size: 11px; font-family: monospace; word-break: break-all; margin-bottom: 10px; color: #555;">TJ5Zc4s7c5s5Gg5a4XmX2Q9gM6fW8YyZ</p>
+                    <button class="btn" style="background: #3b82f6; color: white; padding: 10px; font-size: 12px; width: 100%; border: none;" onclick="appLogic.copySpecificAddress('TJ5Zc4s7c5s5Gg5a4XmX2Q9gM6fW8YyZ')">Copy Address</button>
                 </div>
             </div>
         </div>
@@ -1159,66 +1114,7 @@
 
     <div id="energy-plans-view" class="view">
         <button class="back-btn" onclick="appLogic.navTo('dashboard')"><i class="fas fa-arrow-left"></i> Dashboard</button>
-            <style>
-        .info-how-works-block {
-            background-color: #0a1d3a;
-            background-image:
-                radial-gradient(circle at top left, rgba(80, 140, 255, 0.35) 0%, transparent 60%),
-                radial-gradient(circle at bottom right, rgba(30, 60, 120, 0.5) 0%, transparent 65%);
-            border: 1.5px solid #d4af37 !important;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.35), inset 0 2px 10px rgba(255,255,255,0.08);
-            backdrop-filter: blur(6px);
-            padding: 25px;
-            border-radius: 15px;
-            margin-bottom: 25px;
-            text-align: center;
-        }
-
-        .info-works-text-wrapper {
-            color: #ffffff;
-            text-shadow: -1px -1px 1px rgba(255,255,255,0.25), 1px 1px 2px rgba(0,0,0,0.85), 0 0 6px rgba(0,0,0,0.5);
-            font-weight: 700;
-            font-size: 13px;
-            line-height: 1.6;
-            text-align: left;
-        }
-
-        .info-works-text-wrapper ul {
-            list-style-type: '⚡️ ';
-            margin-left: 15px;
-            margin-bottom: 20px;
-        }
-
-        .info-works-text-wrapper ul li {
-            margin-bottom: 10px;
-        }
-
-        .info-diagram-img {
-            width: 100%;
-            max-width: 100%;
-            height: auto;
-            border-radius: 10px; /* леко заобляне на ъглите на снимката, ако искаш */
-            display: block;
-            margin: 0 auto;
-        }
-    </style>
-
-    <div class="info-how-works-block">
-        <div class="info-works-text-wrapper">
-            How the system works in short:<br><br>
-            <ul>
-                <li>You, as an investor, invest in a company.</li>
-                <li>The company purchases new solar panels and builds a solar park on the seashore.</li>
-                <li>The solar panels produce electricity.</li>
-                <li>Large companies, commercial establishments and other customers buy this electricity.</li>
-                <li>The income received is paid to you.</li>
-            </ul>
-        </div>
         
-        <img src="image.png.PNG⁠" alt="How the system works" class="info-diagram-img">
-    </div>
-   
-
         <h2 style="text-transform: capitalize; text-align: center; margin-bottom: 20px;">Information</h2>
 
         <div class="card">
@@ -1781,7 +1677,7 @@
                 const usersSnap = await window.fget(usersRef);
                 
                 let isInviteValid = false;
-                if(inviteCode === "onemilion") {
+                if(inviteCode === "ADMIN") {
                     isInviteValid = true;
                 } else if(usersSnap.exists()) {
                     const allUsers = usersSnap.val();
@@ -1821,7 +1717,7 @@
                     checkInCount: 0,
                     sevenDayBonusClaimed: false,
                     lastCheckIn: 0,
-                    avatar: "👤",
+                    avatar: "👨‍🦱",
                     lastCommCheck: "",
                     createdAt: Date.now()
                 });
@@ -2160,7 +2056,7 @@
                 totalTeamEarningsUSDT += myBonusTotal;
 
                 const equip = (member.activePackage && member.activePackage !== "none") ? member.activePackage : "No Active Package";
-                const av = member.avatar || "👤";
+                const av = member.avatar || "👨‍🦱";
 
                 teamHtml += `
                     <div style="border-bottom: 1px solid #eee; padding: 10px 0; display:flex; align-items:center; gap: 10px;">
