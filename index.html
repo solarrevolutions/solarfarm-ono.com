@@ -1,0 +1,3098 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Solar Energy ⚡️</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <style>
+        :root {
+            --text-black: #000000;
+            --text-gray: #7a7a7a;
+            --border-gray: #cccccc;
+            --fresh-green: #4ade80;
+            --btn-hover-dark: rgba(20, 20, 20, 0.65);
+            --error-red: #FF3366;
+            --success-green: #28a745;
+            --admin-color: #b000ff;
+            --transition-speed: 0.3s;
+            --border-radius-sm: 10px;
+            --border-radius-md: 16px;
+            --border-radius-lg: 24px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: #FFFFFF;
+            background-image: 
+                radial-gradient(circle at top left, rgba(150, 210, 255, 0.8) 0%, transparent 50%),
+                radial-gradient(circle at top right, rgba(255, 240, 150, 0.8) 0%, transparent 50%);
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            color: var(--text-black);
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
+
+        #app-container {
+            width: 100%;
+            max-width: 480px;
+            background: transparent;
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        .view {
+            display: none;
+            flex: 1;
+            padding: 25px 20px;
+            padding-bottom: 40px;
+            animation: slideUpFade 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .view.active { display: block; }
+        
+        .text-center { text-align: center; }
+        .text-gray { color: var(--text-gray); }
+
+        .logo-title {
+            font-size: 38px;
+            font-weight: 900;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: -1px;
+            user-select: none;
+            cursor: default;
+            color: #000000 !important;
+            text-shadow: 
+                -1px -1px 1px rgba(255,255,255,1),
+                1px 1px 1px rgba(0,0,0,0.3),
+                2px 2px 4px rgba(0,0,0,0.2) !important;
+        }
+
+        .auth-tabs-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            padding: 0 10px;
+        }
+        
+        .auth-tab-btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: var(--border-radius-sm);
+            font-weight: 800;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: var(--transition-speed);
+            text-align: center;
+            font-size: 13px;
+            letter-spacing: 1px;
+            background: transparent;
+            color: #999999;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .auth-tab-btn.active {
+            background: var(--btn-hover-dark);
+            color: #ffffff;
+            border-color: #cccccc;
+        }
+
+        .form-group { margin-bottom: 22px; text-align: left; }
+        
+        .input-wrapper {
+            display: flex;
+            align-items: center; 
+            background: transparent;
+            border-radius: var(--border-radius-sm); 
+            padding: 8px 15px; 
+            border: 1px solid var(--border-gray);
+            transition: var(--transition-speed);
+            position: relative;
+        }
+
+        .input-wrapper:focus-within { 
+            border-color: var(--text-black);
+            background: #ffffff;
+        }
+        
+        .toggle-password { 
+            position: absolute;
+            right: 15px; 
+            cursor: pointer; 
+            color: var(--text-gray); 
+            font-size: 16px; 
+            transition: color 0.2s;
+        }
+        .toggle-password:hover {
+            color: var(--text-black);
+        }
+
+        input, select, textarea {
+            width: 100%;
+            background: transparent; 
+            border: none; 
+            color: var(--text-black); 
+            padding: 12px 0; 
+            outline: none; 
+            font-size: 14px; 
+            font-weight: 600; 
+            resize: none;
+        }
+
+        input::placeholder, textarea::placeholder { 
+            color: var(--text-gray);
+            font-weight: 500;
+        }
+
+        .phone-group { display: flex; gap: 12px; }
+        .phone-code { width: 38%; }
+        .phone-number { width: 62%; }
+
+        .btn {
+            width: 100%;
+            background: var(--btn-hover-dark); 
+            color: #ffffff; 
+            border: 1px solid rgba(255,255,255,0.1); 
+            padding: 16px;
+            font-size: 15px; 
+            font-weight: 800; 
+            border-radius: var(--border-radius-sm); 
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: capitalize;
+            letter-spacing: 0.5px;
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            gap: 10px;
+            backdrop-filter: blur(5px);
+        }
+        
+        .btn:hover:not(:disabled) { 
+            background: rgba(30, 30, 30, 0.7);
+        }
+        .btn:active:not(:disabled) { 
+            background: rgba(0, 0, 0, 0.8);
+        }
+
+        .btn-invest {
+            background: #2563eb !important;
+            color: #ffffff !important;
+            border: none !important;
+            box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3) !important;
+            text-shadow: none !important;
+        }
+        .btn-invest:hover:not(:disabled) {
+            background: #1d4ed8 !important;
+        }
+        .btn-invest:active:not(:disabled) {
+            background: #1e3a8a !important;
+        }
+
+        #btn-login, #btn-register {
+            background: transparent !important;
+            color: var(--text-black) !important;
+            border: 1px solid rgba(0,0,0,0.2) !important;
+            backdrop-filter: none !important;
+        }
+        #btn-login:hover:not(:disabled), #btn-register:hover:not(:disabled) {
+            background: rgba(0,0,0,0.05) !important;
+        }
+        #btn-login:active:not(:disabled), #btn-register:active:not(:disabled) {
+            background: rgba(0,0,0,0.1) !important;
+        }
+
+        .btn-admin {
+            background: #000000 !important;
+            color: white !important;
+            border: none !important;
+        }
+
+        .btn:disabled { 
+            background: rgba(0,0,0,0.05) !important;
+            color: #bbb !important; border-color: #eee !important; cursor: not-allowed;
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--text-gray);
+            cursor: pointer;
+        }
+        .checkbox-container input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .dash-top-bar {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            margin-top: 10px;
+            position: relative;
+        }
+
+        .top-right-controls {
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .avatar-wrapper {
+            position: relative;
+        }
+        .profile-avatar-circle {
+            width: 50px;
+            height: 50px;
+            background-color: #fff;
+            border: 1px solid var(--border-gray);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            font-size: 30px;
+        }
+        .emoji-dropdown {
+            display: none;
+            position: absolute;
+            top: 60px;
+            left: 0;
+            background: #fff;
+            border: 1px solid var(--border-gray);
+            border-radius: 10px;
+            padding: 10px;
+            width: 250px;
+            flex-wrap: wrap;
+            gap: 10px;
+            z-index: 100;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        .emoji-dropdown.show { display: flex; }
+        .emoji-item {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 28px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            border: 1px solid #ddd;
+        }
+        .emoji-item:hover { transform: scale(1.1); border-color: #aaa; }
+
+        .user-center-info {
+            text-align: left;
+        }
+        .display-phone {
+            font-size: 16px;
+            font-weight: 900;
+            letter-spacing: 1px;
+            color: var(--text-black);
+        }
+        .display-id {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-gray);
+            margin-top: 2px;
+            text-transform: uppercase;
+        }
+
+        .card-3d-container {
+            perspective: 1200px;
+            width: 100%;
+            height: 220px;
+            margin-bottom: 25px;
+        }
+        .card-3d {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform-style: preserve-3d;
+        }
+        .card-3d.flipped {
+            transform: rotateY(180deg);
+        }
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: var(--border-radius-md);
+            padding: 20px;
+            border: 1px solid rgba(0,0,0,0.1);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1), inset 0 2px 10px rgba(255,255,255,0.8);
+            background-color: #ffffff;
+            background-image: 
+                radial-gradient(circle at top left, rgba(150, 210, 255, 0.5) 0%, transparent 65%),
+                radial-gradient(circle at top right, rgba(255, 240, 150, 0.5) 0%, transparent 65%);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .card-face-back {
+            transform: rotateY(180deg);
+            box-shadow: inset 0 10px 20px rgba(0,0,0,0.08), inset 0 -2px 5px rgba(255,255,255,1);
+            background-color: #ffffff;
+            background-image: 
+                radial-gradient(circle at top right, rgba(150, 210, 255, 0.5) 0%, transparent 65%),
+                radial-gradient(circle at top left, rgba(255, 240, 150, 0.5) 0%, transparent 65%);
+        }
+        
+        .engraved-text {
+            color: #333333;
+            text-shadow: 1px 1px 0px rgba(255,255,255,0.8), -1px -1px 0px rgba(0,0,0,0.15);
+            font-weight: 900;
+        }
+        
+        .card-withdraw-text {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 13px;
+            font-weight: 800;
+            color: var(--text-gray);
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .card-withdraw-text:hover { color: var(--text-black); }
+
+        .card-title { font-size: 13px; text-transform: capitalize; margin-bottom: 3px; }
+        .card-currency { font-size: 15px; font-weight: bold; margin-bottom: 5px; color: var(--text-gray); }
+        .card-balance { font-size: 34px; line-height: 1; }
+        
+        .card-bottom-row { display: flex; justify-content: space-between; align-items: flex-end; }
+        .card-package { font-size: 12px; font-weight: 800; text-transform: uppercase; color: var(--text-gray); }
+        
+        .flip-btn {
+            background: transparent;
+            border: none;
+            font-size: 22px;
+            color: var(--text-black);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .flip-btn:active { transform: scale(0.8); }
+
+        .back-stat-row { display: flex; justify-content: space-between; margin-bottom: 8px; border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 4px; }
+        .back-stat-row:last-child { border-bottom: none; }
+        .back-label { font-size: 11px; font-weight: 800; text-transform: capitalize; color: #555; }
+        .back-value { font-size: 15px; font-weight: 900; color: #111; }
+
+        .dashboard-nav-list { display: flex; flex-direction: column; gap: 15px; }
+
+        .card { 
+            background: #fff;
+            border-radius: var(--border-radius-md); padding: 22px; margin-bottom: 20px; 
+            border: 1px solid #eee; box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+        }
+
+        .back-btn { 
+            background: transparent;
+            color: var(--text-black); border: none; font-size: 14px; font-weight: 800;
+            cursor: pointer; display: inline-flex; align-items: center; gap: 8px; margin-bottom: 20px; 
+            text-transform: capitalize;
+        }
+
+        .package-card { 
+            background: rgba(255, 255, 255, 0.35);
+            backdrop-filter: blur(10px);
+            border-radius: var(--border-radius-md); padding: 25px; margin-bottom: 25px; 
+            border: 1px solid rgba(255, 255, 255, 0.5); box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+            position: relative; overflow: hidden;
+        }
+        .package-title { font-size: 22px; font-weight: 900; color: #000; margin-bottom: 5px; text-transform: capitalize; }
+        .package-price { font-size: 32px; font-weight: 900; margin: 15px 0; color: #000; }
+        .package-details { 
+            display: flex; justify-content: space-between; margin-bottom: 20px; font-size: 12px; 
+            background: rgba(255,255,255,0.6); padding: 15px; border-radius: var(--border-radius-sm); border: 1px solid rgba(0,0,0,0.05);
+        }
+        .package-details strong { color: #000; font-size: 16px; display: block; margin-top: 5px; font-weight: 900; }
+
+        .promo-badge {
+            position: absolute; top: 15px; right: -30px; background: var(--error-red); color: white;
+            padding: 5px 30px; font-size: 11px; font-weight: 900; transform: rotate(45deg);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        #shop-promo-timer {
+            background: rgba(255, 51, 102, 0.1);
+            border: 1px solid var(--error-red);
+            color: var(--error-red);
+            font-size: 20px;
+            font-weight: 800;
+            text-align: center;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .calc-box {
+            background: #f9f9f9;
+            padding: 15px; border-radius: var(--border-radius-sm); border: 1px solid #ddd; margin-bottom: 20px;
+        }
+        .calc-result {
+            font-size: 24px; font-weight: 900; color: var(--fresh-green); text-align: center; margin-top: 15px;
+        }
+
+        .modal-overlay { 
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(255, 255, 255, 0.85); z-index: 2000; justify-content: center;
+            align-items: center; 
+            backdrop-filter: blur(8px); opacity: 0; transition: opacity 0.3s;
+        }
+        .modal-overlay.show { display: flex; opacity: 1; }
+        .modal-content { 
+            background: #fff; width: 90%; max-width: 420px; border-radius: var(--border-radius-lg);
+            padding: 25px; border: 1px solid #ddd; position: relative; 
+            transform: scale(0.9) translateY(20px); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        .modal-overlay.show .modal-content { transform: scale(1) translateY(0); }
+        
+        .close-modal-x { 
+            position: absolute; top: 15px; right: 20px; color: var(--text-gray); font-size: 28px;
+            cursor: pointer; font-weight: bold; transition: 0.2s;
+        }
+        .close-modal-x:hover { color: var(--text-black); }
+
+        .amount-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px;
+        }
+        .amt-box {
+            border: 1px solid var(--border-gray); padding: 15px 5px; text-align: center; border-radius: 8px;
+            font-weight: 800; cursor: pointer; transition: 0.2s; background: transparent; color: var(--text-gray);
+        }
+        .amt-box.selected {
+            border-color: var(--text-black); background: rgba(0,0,0,0.03); color: var(--text-black);
+        }
+        
+        .pin-grid {
+            display: flex; justify-content: space-between; gap: 5px; margin-bottom: 25px;
+        }
+        .pin-box {
+            width: 45px; height: 50px; text-align: center; font-size: 24px; font-weight: 900;
+            border: 1px solid var(--border-gray); border-radius: 8px; background: transparent; color: #000;
+        }
+        .pin-box:focus { border-color: var(--text-black); outline: none; background: #fff; }
+
+        #toast-container { 
+            position: fixed; top: 60px; left: 50%; transform: translateX(-50%); z-index: 9999; 
+            width: 90%; max-width: 400px; display: flex; flex-direction: column; gap: 10px; pointer-events: none;
+        }
+        .toast { 
+            background: #fff; color: var(--text-black); padding: 15px 20px;
+            border-radius: var(--border-radius-sm); border: 1px solid #eee;
+            display: flex; align-items: center; gap: 15px; font-size: 13px; font-weight: 700;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            animation: toastSlideIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .toast.error { border-left: 4px solid var(--error-red); }
+        .toast.success { border-left: 4px solid var(--success-green); }
+        .toast.admin-msg { border-left: 4px solid var(--admin-color); }
+
+        @keyframes slideUpFade { from { opacity: 0; transform: translateY(40px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        @keyframes toastSlideIn { from { opacity: 0; transform: translateY(-30px) scale(0.9); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        @keyframes toastFadeOut { from { opacity: 1; transform: scale(1); } to { opacity: 0; transform: scale(0.9); } }
+
+        .calendar-grid { 
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(32px, 1fr)); gap: 8px; max-height: 280px;
+            overflow-y: auto; margin-bottom: 20px; padding: 15px; background: transparent; border-radius: var(--border-radius-sm); border: 1px solid #eee;
+        }
+        .day-box { 
+            width: 32px; height: 32px; background: rgba(0,0,0,0.02); color: var(--text-gray);
+            display: flex; justify-content: center; align-items: center; font-size: 12px; font-weight: 900; border-radius: 6px; border: 1px solid #eee;
+        }
+        .day-box.checked { background: var(--text-black); color: #fff; border: none; }
+        
+        .level-row {
+            background: transparent; padding: 12px 15px; border-radius: var(--border-radius-sm); 
+            border-left: 3px solid var(--text-black); display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;
+            border-top: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;
+        }
+        .level-row strong { color: var(--text-black); font-size: 18px; }
+
+        .rewards-text p { margin: 10px 0; font-size: 13px; text-align: left; line-height: 1.5; font-weight: 600; color: var(--text-gray); }
+
+        .custom-popup {
+            position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); 
+            background:#fff; padding:25px; border-radius:15px; z-index:10000; 
+            border:1px solid #ddd; color:#333; width: 90%; max-width:350px;
+            text-align:center; box-shadow:0 20px 50px rgba(0,0,0,0.15); display: none;
+        }
+
+        #withdraw-anim-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(6px); z-index: 9999;
+            justify-content: center; align-items: center; flex-direction: column;
+        }
+        .spinner-ring {
+            border: 5px solid rgba(0,0,0,0.1); border-left-color: var(--success-green); 
+            border-radius: 50%; width: 60px; height: 60px; animation: spin 1s linear infinite;
+        }
+        .success-checkmark {
+            display: none; width: 80px; height: 80px; border-radius: 50%; background: var(--success-green); 
+            justify-content: center; align-items: center; color: white; font-size: 3rem;
+            box-shadow: 0 10px 30px rgba(40,167,69,0.4); animation: slideUpFade 0.3s ease;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        #admin-view .card, #admin-view input, #admin-view select, #admin-view textarea {
+            background-color: #1a1a1a !important;
+            color: #e0e0e0 !important;
+            border-color: #333 !important;
+        }
+        #admin-view h3, #admin-view label, #admin-view p { color: #e0e0e0 !important; }
+        
+        .admin-hide-btn {
+            background: #444; color: white; font-size: 11px; padding: 6px 12px; border-radius: 6px; border: none; cursor: pointer;
+        }
+
+        .btn-settings-outline {
+            background: transparent !important;
+            color: var(--text-black) !important;
+            border: 1px solid rgba(0,0,0,0.25) !important;
+            backdrop-filter: none !important;
+            box-shadow: none !important;
+            text-shadow: none !important;
+        }
+        .btn-settings-outline:hover:not(:disabled) {
+            background: rgba(0,0,0,0.05) !important;
+        }
+        .btn-settings-outline:active:not(:disabled) {
+            background: rgba(0,0,0,0.1) !important;
+        }
+
+        .btn-nav-outline {
+            background: transparent !important;
+            color: #000000 !important;
+            border: 1px solid rgba(0,0,0,0.2) !important;
+            backdrop-filter: none !important;
+            box-shadow: none !important;
+            text-shadow: none !important;
+        }
+        .btn-nav-outline:hover:not(:disabled) {
+            background: rgba(0,0,0,0.05) !important;
+        }
+        .btn-nav-outline:active:not(:disabled) {
+            background: rgba(0,0,0,0.1) !important;
+        }
+
+        .card-face-darkblue {
+            background-color: #0a1d3a;
+            background-image:
+                radial-gradient(circle at top left, rgba(80, 140, 255, 0.35) 0%, transparent 60%),
+                radial-gradient(circle at bottom right, rgba(30, 60, 120, 0.5) 0%, transparent 65%);
+            border: 1.5px solid #d4af37 !important;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.35), inset 0 2px 10px rgba(255,255,255,0.08);
+            backdrop-filter: blur(6px);
+        }
+        .card-face-darkblue.card-face-back {
+            background-color: #0a1d3a;
+            background-image:
+                radial-gradient(circle at top right, rgba(80, 140, 255, 0.35) 0%, transparent 60%),
+                radial-gradient(circle at bottom left, rgba(30, 60, 120, 0.5) 0%, transparent 65%);
+            box-shadow: inset 0 10px 20px rgba(0,0,0,0.3), inset 0 -2px 5px rgba(255,255,255,0.05);
+        }
+        .engraved-text-light {
+            color: #ffffff;
+            text-shadow:
+                -1px -1px 1px rgba(255,255,255,0.25),
+                1px 1px 2px rgba(0,0,0,0.85),
+                0 0 6px rgba(0,0,0,0.5);
+            font-weight: 900;
+        }
+        .card-face-darkblue .card-currency,
+        .card-face-darkblue .card-package,
+        .card-face-darkblue .back-label,
+        .card-face-darkblue .flip-btn,
+        .card-face-darkblue .card-withdraw-text {
+            color: #ffffff !important;
+        }
+        .card-face-darkblue .back-stat-row {
+            border-bottom: 1px solid rgba(255,255,255,0.12);
+        }
+
+        #packages-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        #packages-container .package-card {
+            margin-bottom: 0;
+            padding: 15px;
+        }
+        #packages-container .package-card.full-row {
+            grid-column: 1 / -1;
+        }
+        #packages-container .package-card .package-title { font-size: 16px; }
+        #packages-container .package-card .package-price { font-size: 22px; margin: 8px 0; }
+        #packages-container .package-card .package-details { font-size: 10px; padding: 10px; }
+        #packages-container .package-card .package-details strong { font-size: 13px; }
+
+        .btn-reinvest {
+            background: #2563eb !important;
+            color: #ffffff !important;
+            border: none !important;
+            box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3) !important;
+            text-shadow: none !important;
+            margin-top: 10px;
+        }
+        .btn-reinvest:hover:not(:disabled) { background: #1d4ed8 !important; }
+        .btn-reinvest:active:not(:disabled) { background: #1e3a8a !important; }
+
+        .btn-solarfarm-find {
+            background: #f5c518 !important;
+            color: #1a1a1a !important;
+            border: none !important;
+            box-shadow: 0 4px 10px rgba(245, 197, 24, 0.35) !important;
+            text-shadow: none !important;
+        }
+        .btn-solarfarm-find:hover:not(:disabled) { background: #ddb014 !important; }
+        .btn-solarfarm-find:active:not(:disabled) { background: #c49d10 !important; }
+
+        #solarfarm-map {
+            width: 100%;
+            height: 60vh;
+            border-radius: var(--border-radius-md);
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            overflow: hidden;
+        }
+
+        #invest-slide-overlay {
+            display: none; position: fixed; bottom: 0; left: 0; width: 100%;
+            background: rgba(255,255,255,0.95); backdrop-filter: blur(10px);
+            z-index: 9998; padding: 25px 20px; box-shadow: 0 -10px 30px rgba(0,0,0,0.1);
+            border-radius: 20px 20px 0 0;
+        }
+        .slide-track {
+            position: relative; width: 100%; height: 56px; background: rgba(0,0,0,0.06);
+            border-radius: 28px; border: 1px solid rgba(0,0,0,0.1); overflow: hidden;
+        }
+        .slide-fill {
+            position: absolute; top: 0; left: 0; height: 100%; width: 56px;
+            background: linear-gradient(90deg, #2563eb, #60a5fa); border-radius: 28px;
+            transition: none;
+        }
+        .slide-handle {
+            position: absolute; top: 0; left: 0; width: 56px; height: 56px;
+            background: #2563eb; border-radius: 50%; display: flex; justify-content: center;
+            align-items: center; color: #fff; font-size: 20px; cursor: grab;
+            box-shadow: 0 4px 10px rgba(37,99,235,0.4); touch-action: none; z-index: 2;
+        }
+        .slide-label {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; justify-content: center; align-items: center;
+            font-weight: 800; font-size: 13px; color: #555; text-transform: uppercase;
+            letter-spacing: 1px; pointer-events: none;
+        }
+
+        #buy-success-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255,255,255,0.7); backdrop-filter: blur(8px); z-index: 9999;
+            justify-content: center; align-items: center;
+        }
+        .buy-success-circle {
+            width: 90px; height: 90px; border-radius: 50%; background: var(--success-green);
+            display: flex; justify-content: center; align-items: center; color: #fff;
+            font-size: 3.2rem; box-shadow: 0 10px 30px rgba(40,167,69,0.4);
+            animation: slideUpFade 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+
+<div id="toast-container"></div>
+<div id="broadcast-popup" class="custom-popup"></div>
+
+<div id="withdraw-anim-overlay">
+    <div class="spinner-ring" id="withdraw-spinner"></div>
+    <div class="success-checkmark" id="withdraw-success-check">
+        <i class="fas fa-check"></i>
+    </div>
+</div>
+
+<div id="invest-slide-overlay">
+    <p style="text-align:center; font-size:13px; font-weight:800; margin-bottom:15px; text-transform:uppercase; letter-spacing:0.5px;" id="invest-slide-title">Slide to confirm purchase</p>
+    <div class="slide-track" id="invest-slide-track">
+        <div class="slide-fill" id="invest-slide-fill"></div>
+        <div class="slide-label" id="invest-slide-label">Slide to buy</div>
+        <div class="slide-handle" id="invest-slide-handle"><i class="fas fa-chevron-right"></i></div>
+    </div>
+    <button class="btn btn-settings-outline" style="margin-top:15px;" onclick="appLogic.closeInvestSlider()">Cancel</button>
+</div>
+
+<div id="buy-success-overlay">
+    <div class="buy-success-circle">
+        <i class="fas fa-check"></i>
+    </div>
+</div>
+
+<div id="app-container">
+
+    <div id="login-view" class="view active">
+        <div class="text-center">
+            <h1 class="logo-title">Solar Energy</h1>
+            <div class="auth-tabs-container">
+                <div class="auth-tab-btn" onclick="appLogic.switchAuthView('register')">Register</div>
+                <div class="auth-tab-btn active" onclick="appLogic.switchAuthView('login')">Login</div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="phone-group">
+                <div class="input-wrapper phone-code">
+                    <select id="login-country-code">
+                        <select id="reg-country-code">
+                        <option value="+359" selected>+359 (Bulgaria 🇧🇬)</option>
+                        <option value="+43">+43 (Austria 🇦🇹)</option>
+                        <option value="+32">+32 (Belgium 🇧🇪)</option>
+                        <option value="+385">+385 (Croatia 🇭🇷)</option>
+                        <option value="+357">+357 (Cyprus 🇨🇾)</option>
+                        <option value="+420">+420 (Czechia 🇨🇿)</option>
+                        <option value="+45">+45 (Denmark 🇩🇰)</option>
+                        <option value="+372">+372 (Estonia 🇪🇪)</option>
+                        <option value="+358">+358 (Finland 🇫🇮)</option>
+                        <option value="+33">+33 (France 🇫🇷)</option>
+                        <option value="+49">+49 (Germany 🇩🇪)</option>
+                        <option value="+30">+30 (Greece 🇬🇷)</option>
+                        <option value="+36">+36 (Hungary 🇭🇺)</option>
+                        <option value="+353">+353 (Ireland 🇮🇪)</option>
+                        <option value="+39">+39 (Italy 🇮🇹)</option>
+                        <option value="+371">+371 (Latvia 🇱🇻)</option>
+                        <option value="+370">+370 (Lithuania 🇱🇹)</option>
+                        <option value="+352">+352 (Luxembourg 🇱🇺)</option>
+                        <option value="+356">+356 (Malta 🇲🇹)</option>
+                        <option value="+31">+31 (Netherlands 🇳🇱)</option>
+                        <option value="+48">+48 (Poland 🇵🇱)</option>
+                        <option value="+351">+351 (Portugal 🇵🇹)</option>
+                        <option value="+40">+40 (Romania 🇷🇴)</option>
+                        <option value="+421">+421 (Slovakia 🇸🇰)</option>
+                        <option value="+386">+386 (Slovenia 🇸🇮)</option>
+                        <option value="+34">+34 (Spain 🇪🇸)</option>
+                        <option value="+46">+46 (Sweden 🇸🇪)</option>
+                        <option value="+1">+1 (United States 🇺🇸)</option>
+                    </select>
+                </div>
+                <div class="input-wrapper phone-number">
+                    <input type="tel" id="login-phone" placeholder="Phone Number">
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="input-wrapper">
+                <input type="password" id="login-password" placeholder="Password" style="padding-right: 35px;">
+                <i class="fas fa-eye toggle-password" onclick="appLogic.togglePassword('login-password', this)"></i>
+            </div>
+        </div>
+
+        <div class="text-center" style="margin-bottom: 15px;">
+            <a href="https://t.me/solarenergysupport" target="_blank" style="color: var(--text-gray); font-size: 12px; font-weight: 600; text-decoration: none;">Forget Password?</a>
+        </div>
+
+        <button class="btn" id="btn-login" onclick="appLogic.login()">
+            <span>Login</span>
+        </button>
+    </div>
+
+    <div id="register-view" class="view">
+        <div class="text-center">
+            <h1 class="logo-title">Solar Energy</h1>
+            <div class="auth-tabs-container">
+                <div class="auth-tab-btn active" onclick="appLogic.switchAuthView('register')">Register</div>
+                <div class="auth-tab-btn" onclick="appLogic.switchAuthView('login')">Login</div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="input-wrapper">
+                <input type="text" id="reg-name" placeholder="Full Name">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="phone-group">
+                <div class="input-wrapper phone-code">
+                    <select id="reg-country-code">
+                        <select id="reg-country-code">
+                        <option value="+359" selected>+359 (Bulgaria 🇧🇬)</option>
+                        <option value="+43">+43 (Austria 🇦🇹)</option>
+                        <option value="+32">+32 (Belgium 🇧🇪)</option>
+                        <option value="+385">+385 (Croatia 🇭🇷)</option>
+                        <option value="+357">+357 (Cyprus 🇨🇾)</option>
+                        <option value="+420">+420 (Czechia 🇨🇿)</option>
+                        <option value="+45">+45 (Denmark 🇩🇰)</option>
+                        <option value="+372">+372 (Estonia 🇪🇪)</option>
+                        <option value="+358">+358 (Finland 🇫🇮)</option>
+                        <option value="+33">+33 (France 🇫🇷)</option>
+                        <option value="+49">+49 (Germany 🇩🇪)</option>
+                        <option value="+30">+30 (Greece 🇬🇷)</option>
+                        <option value="+36">+36 (Hungary 🇭🇺)</option>
+                        <option value="+353">+353 (Ireland 🇮🇪)</option>
+                        <option value="+39">+39 (Italy 🇮🇹)</option>
+                        <option value="+371">+371 (Latvia 🇱🇻)</option>
+                        <option value="+370">+370 (Lithuania 🇱🇹)</option>
+                        <option value="+352">+352 (Luxembourg 🇱🇺)</option>
+                        <option value="+356">+356 (Malta 🇲🇹)</option>
+                        <option value="+31">+31 (Netherlands 🇳🇱)</option>
+                        <option value="+48">+48 (Poland 🇵🇱)</option>
+                        <option value="+351">+351 (Portugal 🇵🇹)</option>
+                        <option value="+40">+40 (Romania 🇷🇴)</option>
+                        <option value="+421">+421 (Slovakia 🇸🇰)</option>
+                        <option value="+386">+386 (Slovenia 🇸🇮)</option>
+                        <option value="+34">+34 (Spain 🇪🇸)</option>
+                        <option value="+46">+46 (Sweden 🇸🇪)</option>
+                        <option value="+1">+1 (United States 🇺🇸)</option>
+                    </select>
+                </div>
+                <div class="input-wrapper phone-number">
+                    <input type="tel" id="reg-phone" placeholder="Phone Number">
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="input-wrapper">
+                <input type="text" id="reg-invite" placeholder="Invitation Code">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="input-wrapper">
+                <input type="password" id="reg-password" placeholder="Password (6-12 chars)" minlength="6" maxlength="12" style="padding-right: 35px;">
+                <i class="fas fa-eye toggle-password" onclick="appLogic.togglePassword('reg-password', this)"></i>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <div class="input-wrapper">
+                <input type="password" id="reg-password-confirm" placeholder="Confirm Password" minlength="6" maxlength="12" style="padding-right: 35px;">
+                <i class="fas fa-eye toggle-password" onclick="appLogic.togglePassword('reg-password-confirm', this)"></i>
+            </div>
+        </div>
+
+        <label class="checkbox-container">
+            <input type="checkbox" id="robot-check"> I am not a robot
+        </label>
+
+        <button class="btn" id="btn-register" onclick="appLogic.register()">
+            <span>Register</span>
+        </button>
+    </div>
+
+    <div id="dashboard-view" class="view">
+        <div class="dash-top-bar">
+            <div class="avatar-wrapper">
+                <div class="profile-avatar-circle" onclick="appLogic.toggleEmojiDropdown()" id="current-avatar">👨‍🦱</div>
+                <div class="emoji-dropdown" id="emoji-dropdown">
+                    <div class="emoji-item" onclick="appLogic.selectAvatar('👨🏻‍🦱')">👨🏻‍🦱</div>
+                    <div class="emoji-item" onclick="appLogic.selectAvatar('👩🏼‍🦱')">👩🏼‍🦱</div>
+                    <div class="emoji-item" onclick="appLogic.selectAvatar('👨🏻‍🦲')">👨🏻‍🦲</div>
+                    <div class="emoji-item" onclick="appLogic.selectAvatar('👱🏻‍♀️')">👱🏻‍♀️</div>
+                    <div class="emoji-item" onclick="appLogic.selectAvatar('👴🏻')">👴🏻</div>
+                    <div class="emoji-item" onclick="appLogic.selectAvatar('👵🏻')">👵🏻</div>
+                    <div class="emoji-item" onclick="appLogic.selectAvatar('🧔🏻‍♂️')">🧔🏻‍♂️</div>
+                    <div class="emoji-item" onclick="appLogic.selectAvatar('👩🏻‍🦳')">👩🏻‍🦳</div>
+                    <div class="emoji-item" onclick="appLogic.selectAvatar('🧑🏻‍🦱')">🧑🏻‍🦱</div>
+                    <div class="emoji-item" onclick="appLogic.selectAvatar('🧔🏼‍♂️')">🧔🏼‍♂️</div>
+                    <div class="emoji-item" onclick="appLogic.selectAvatar('👤')">👤</div>
+              </div>
+            </div>
+            <div class="user-center-info">
+                <div class="display-phone" id="display-phone">+359******000</div>
+                <div class="display-id" id="display-id">ID: EN0000</div>
+            </div>
+            
+            <div class="top-right-controls">
+                <i class="fas fa-user-shield" id="btn-admin-nav" style="display:none; font-size: 22px; color: #000000; cursor: pointer;" onclick="appLogic.navTo('admin')"></i>
+                <i class="fas fa-cog" style="font-size: 24px; color: #000; cursor: pointer;" onclick="appLogic.navTo('profile')"></i>
+            </div>
+        </div>
+
+        <div class="card-3d-container">
+            <div class="card-3d" id="dash-card">
+                <div class="card-face card-face-darkblue">
+                    <div class="card-withdraw-text" onclick="appLogic.openWithdrawalModal()">Withdrawal >></div>
+                    
+                    <div>
+                        <div class="card-title engraved-text-light">Available Balance</div>
+                        <div class="card-currency engraved-text-light" id="dash-currency-label">USDT</div>
+                        <div class="card-balance engraved-text-light"><span id="dash-balance">0.00</span></div>
+                    </div>
+                    <div class="card-bottom-row">
+                        <div class="card-package engraved-text-light" id="dash-package-name">No Active Package</div>
+                        <button class="flip-btn" onclick="appLogic.flipCard()"><i class="fas fa-sync-alt"></i></button>
+                    </div>
+                </div>
+                <div class="card-face card-face-back card-face-darkblue">
+                    <div>
+                        <div class="back-stat-row">
+                            <span class="back-label engraved-text-light">Investment</span>
+                            <span class="back-value engraved-text-light" id="dash-invest">0</span>
+                        </div>
+                        <div class="back-stat-row">
+                            <span class="back-label engraved-text-light">Total Profit</span>
+                            <span class="back-value engraved-text-light" id="dash-total">0</span>
+                        </div>
+                        <div class="back-stat-row">
+                            <span class="back-label engraved-text-light">Total Profit Today</span>
+                            <span class="back-value engraved-text-light" id="dash-today">0</span>
+                        </div>
+                        </div>
+                    <div style="text-align: right;">
+                        <button class="flip-btn" onclick="appLogic.flipCard()"><i class="fas fa-undo"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-nav-list">
+            <button class="btn btn-nav-outline" onclick="appLogic.navTo('packages')">Shop</button>
+            <button class="btn btn-nav-outline" onclick="appLogic.navTo('affiliate')">My Team</button>
+            <button class="btn btn-nav-outline" onclick="appLogic.openCalendarModal()">Check In</button>
+            <button class="btn btn-nav-outline" onclick="appLogic.navTo('energy-plans')">Information</button>
+            <button class="btn btn-nav-outline" onclick="appLogic.navTo('history')">Transaction History</button>
+            <button class="btn btn-nav-outline" onclick="appLogic.navTo('solarfarm')">Solar Farm</button>
+            <button class="btn btn-nav-outline" onclick="document.getElementById('support-modal').classList.add('show')">Support</button>
+            
+            <button class="btn btn-nav-outline" id="btn-install" style="display:none;">APP</button>
+            
+            <button class="btn btn-nav-outline" onclick="window.open('https://t.me/solarrevolutions', '_blank')">
+                Telegram Group
+            </button>
+        </div>
+    </div>
+
+    <div id="support-modal" class="modal-overlay">
+        <div class="modal-content text-center">
+            <span class="close-modal-x" onclick="document.getElementById('support-modal').classList.remove('show')">&times;</span>
+            <h3 style="margin-bottom: 20px;">Describe your problem</h3>
+            <textarea id="support-message" rows="5" placeholder="Type your issue here..." style="width: 100%; border: 1px solid #ccc; border-radius: 8px; padding: 10px; margin-bottom: 15px; color: black; font-family: 'Montserrat', sans-serif;"></textarea>
+            <button class="btn btn-invest" onclick="appLogic.sendSupportTicket()">Send</button>
+        </div>
+    </div>
+
+    <div id="withdrawal-modal" class="modal-overlay">
+        <div class="modal-content">
+            <span class="close-modal-x" onclick="appLogic.closeModal('withdrawal-modal')">&times;</span>
+            <h3 style="margin-bottom: 20px; text-transform: capitalize; text-align: center;">Withdrawal</h3>
+            
+            <p style="font-size:12px; color:var(--text-gray); margin-bottom:10px; font-weight:bold; text-align:center;">Select Amount</p>
+            <div class="amount-grid" id="withdraw-amount-grid"></div>
+            
+            <input type="hidden" id="selected-withdraw-amt" value="10">
+
+            <div style="text-align: center; margin-bottom: 15px;">
+                <span style="font-size: 13px; font-weight: bold; color: var(--error-red);">Withdrawal Fee: <span id="withdraw-fee-text">10%</span></span><br>
+                <span style="font-size: 14px; font-weight: 900; color: var(--success-green);">You will receive: <span id="withdraw-net-amount"></span></span>
+            </div>
+
+            <p style="font-size:12px; color:var(--text-gray); margin-bottom:10px; font-weight:bold; text-align:center;">Enter 6-digit PIN</p>
+            <div class="pin-grid" id="withdraw-pin-grid">
+                <input type="password" inputmode="numeric" class="pin-box" maxlength="1" onkeyup="appLogic.movePin(this, 1)">
+                <input type="password" inputmode="numeric" class="pin-box" maxlength="1" onkeyup="appLogic.movePin(this, 2)">
+                <input type="password" inputmode="numeric" class="pin-box" maxlength="1" onkeyup="appLogic.movePin(this, 3)">
+                <input type="password" inputmode="numeric" class="pin-box" maxlength="1" onkeyup="appLogic.movePin(this, 4)">
+                <input type="password" inputmode="numeric" class="pin-box" maxlength="1" onkeyup="appLogic.movePin(this, 5)">
+                <input type="password" inputmode="numeric" class="pin-box" maxlength="1" onkeyup="appLogic.movePin(this, 6)">
+            </div>
+
+            <button class="btn" id="btn-withdraw" onclick="appLogic.withdraw()">
+                <span>Withdrawal</span>
+            </button>
+        </div>
+    </div>
+
+    <div id="verification-modal" class="modal-overlay">
+        <div class="modal-content text-center">
+            <span class="close-modal-x" onclick="appLogic.closeModal('verification-modal')">&times;</span>
+            <i class="fas fa-shield-alt" style="font-size: 40px; color: var(--text-gray); margin-bottom: 15px;"></i>
+            <h3 style="margin-bottom: 15px;">Account Verification Required</h3>
+            <p style="font-size: 13px; color: var(--text-gray); margin-bottom: 20px; line-height: 1.5;">
+                You must send exactly <strong id="verify-amt-txt">50 USDT</strong> to the crypto address below in order to verify your account and unlock your withdrawals.
+            </p>
+            
+            <div style="background: #f9f9f9; padding: 15px; border-radius: 8px; font-family: monospace; font-size: 13px; word-break: break-all; margin-bottom: 20px; font-weight: bold; border: 1px solid #ddd;" id="verify-address-text">
+                0x99cFa80E7b83B5D22fE95cC0988606ABc4d9feD3
+            </div>
+
+            <button class="btn" onclick="appLogic.copyVerifyAddress()">Copy Address</button>
+        </div>
+    </div>
+
+    <div id="packages-view" class="view">
+        <button class="back-btn" onclick="appLogic.navTo('dashboard')"><i class="fas fa-arrow-left"></i> Dashboard</button>
+        <h2 style="text-transform: capitalize; text-align: center; margin-bottom: 20px;">Shop</h2>
+        
+        <div id="shop-promo-timer" style="display: none;">
+            🔥 24H PROMO ENDS IN: <br><span id="promo-countdown">24:00:00</span>
+        </div>
+
+        <div id="packages-container"></div>
+    </div>
+
+    <div id="payment-modal" class="modal-overlay">
+        <div class="modal-content text-center">
+            <span class="close-modal-x" onclick="appLogic.closeModal('payment-modal')">&times;</span>
+            <h3 style="margin-bottom: 20px; color: #000; text-transform: uppercase;">Deposit to Invest</h3>
+            <p id="modal-pkg-name" style="color: #555; font-size: 15px; font-weight: 800; margin-bottom: 20px;">Package</p>
+            <input type="hidden" id="modal-pkg-raw-name">
+            
+            <div style="display: flex; flex-direction: column; gap: 15px; margin-bottom: 20px;">
+                <div style="background: #f9f9f9; padding: 15px; border-radius: 10px; border: 1px solid #ddd; text-align: left;">
+                    <p style="font-size: 14px; font-weight: bold; margin-bottom: 5px; color: #000;">USDT (ERC20)</p>
+                    <p style="font-size: 11px; font-family: monospace; word-break: break-all; margin-bottom: 10px; color: #555;">0x09fFfd2E705E385BC021812688F516495128452B</p>
+                    <button class="btn" style="background: #3b82f6; color: white; padding: 10px; font-size: 12px; width: 100%; border: none;" onclick="appLogic.copySpecificAddress('0x09fFfd2E705E385BC021812688F516495128452B')">Copy Address</button>
+                </div>
+
+                <div style="background: #f9f9f9; padding: 15px; border-radius: 10px; border: 1px solid #ddd; text-align: left;">
+                    <p style="font-size: 14px; font-weight: bold; margin-bottom: 5px; color: #000;">USDT (TRC20)</p>
+                    <p style="font-size: 11px; font-family: monospace; word-break: break-all; margin-bottom: 10px; color: #555;">TNn1pktV12fmDd8GtZ2ivBErXZLUB4iVZ8</p>
+                    <button class="btn" style="background: #3b82f6; color: white; padding: 10px; font-size: 12px; width: 100%; border: none;" onclick="appLogic.copySpecificAddress('TNn1pktV12fmDd8GtZ2ivBErXZLUB4iVZ8')">Copy Address</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="affiliate-view" class="view">
+        <button class="back-btn" onclick="appLogic.navTo('dashboard')"><i class="fas fa-arrow-left"></i> Dashboard</button>
+        <h2 class="text-center" style="text-transform: capitalize; margin-bottom: 20px;">My Team</h2>
+        
+        <div class="card text-center" style="background: rgba(255,255,255,0.9); border: 1px solid #ccc; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+            <p style="font-size: 14px; font-weight: 800; color: #000;">Your Current Level</p>
+            <h2 id="ui-team-level" style="color: #000; font-size: 28px; font-weight: 900; margin: 5px 0; text-shadow: none;">LEVEL 1 (5%)</h2>
+            <p id="ui-team-next" style="font-size: 12px; color: #555; margin-bottom: 15px;">Next level: 6 active partners</p>
+            
+            <div style="background: #fff; padding: 15px; border-radius: 10px; border: 1px solid #ddd; margin-bottom: 15px;">
+                <p style="font-size: 11px; color: #777; margin-bottom: 5px; text-transform: uppercase; font-weight: bold;">Your Invitation Code</p>
+                <h2 id="affiliate-code-display" style="letter-spacing: 4px; margin: 0; color: #000; font-size: 24px; text-shadow: none;">LOADING...</h2>
+            </div>
+            <button class="btn" style="background: #000; color: #fff; border: none;" onclick="appLogic.copyCode()">
+                <i class="fas fa-copy"></i> Copy Code
+            </button>
+        </div>
+
+        <div class="card">
+            <h3 style="font-size: 15px; border-bottom: 1px solid #eee; padding-bottom: 12px; margin-bottom: 15px; text-transform: capitalize;">Team Statistics</h3>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                <div style="text-align: center; width: 48%; background: transparent; padding: 15px 5px; border-radius: 8px; border: 1px solid #eee;">
+                    <div style="font-size: 11px; color: var(--text-gray); font-weight: 700;">Total Users</div>
+                    <div style="font-size: 22px; font-weight: 900; margin-top: 8px; color: #000;" id="affiliate-team-size">0</div> 
+                </div>
+                <div style="text-align: center; width: 48%; background: transparent; padding: 15px 5px; border-radius: 8px; border: 1px solid #eee;">
+                    <div style="font-size: 11px; color: var(--text-gray); font-weight: 700;">Total Earned</div>
+                    <div style="font-size: 22px; font-weight: 900; margin-top: 8px; color: #000;"><span id="affiliate-earned">0.00</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h4 style="font-size: 14px; margin-bottom: 15px; text-transform: capitalize; font-weight: 900;">My Team Members</h4>
+            <div id="team-list">
+                <p style="color:var(--text-gray); font-size:12px; text-align:center;">Loading team data...</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="calendar-modal" class="modal-overlay">
+        <div class="modal-content" style="padding-top: 35px;">
+            <span class="close-modal-x" onclick="appLogic.closeModal('calendar-modal')">&times;</span>
+            <h3 style="margin-bottom: 10px; font-size: 18px; text-transform: capitalize; text-align: center;">365 Days Challenge</h3>
+            <p style="color: var(--text-gray); font-size: 12px; margin-bottom: 20px; font-weight: 700; text-align: center;">Check in daily to unlock rewards!</p>
+            
+            <div class="calendar-grid" id="calendar-grid"></div>
+            
+            <button class="btn" id="btn-checkin" onclick="appLogic.checkIn()" style="margin-bottom: 20px;">
+                Check In Now
+            </button>
+
+            <div class="rewards-text">
+                <p>💵 Log in for a total of 7 days to get a 5 USDT Bonus!</p>
+                <p>📉 Log in for 40 days to get -5% withdrawal fee</p>
+                <p>☀️ Log in for 180 days to get free SOLAR START</p>
+                <p>📱 Log in for 365 days to get a new iPhone 17 Pro Max</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="energy-plans-view" class="view">
+        <button class="back-btn" onclick="appLogic.navTo('dashboard')"><i class="fas fa-arrow-left"></i> Dashboard</button>
+            <style>
+        .info-how-works-block {
+            background-color: #0a1d3a;
+            background-image:
+                radial-gradient(circle at top left, rgba(80, 140, 255, 0.35) 0%, transparent 60%),
+                radial-gradient(circle at bottom right, rgba(30, 60, 120, 0.5) 0%, transparent 65%);
+            border: 1.5px solid #d4af37 !important;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.35), inset 0 2px 10px rgba(255,255,255,0.08);
+            backdrop-filter: blur(6px);
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .info-works-text-wrapper {
+            color: #ffffff;
+            text-shadow: -1px -1px 1px rgba(255,255,255,0.25), 1px 1px 2px rgba(0,0,0,0.85), 0 0 6px rgba(0,0,0,0.5);
+            font-weight: 700;
+            font-size: 13px;
+            line-height: 1.6;
+            text-align: left;
+        }
+
+        .info-works-text-wrapper ul {
+            list-style-type: '⚡️ ';
+            margin-left: 15px;
+            margin-bottom: 20px;
+        }
+
+        .info-works-text-wrapper ul li {
+            margin-bottom: 10px;
+        }
+
+        .info-diagram-img {
+            width: 100%;
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px; /* леко заобляне на ъглите на снимката, ако искаш */
+            display: block;
+            margin: 0 auto;
+        }
+    </style>
+
+    <div class="info-how-works-block">
+        <div class="info-works-text-wrapper">
+            How the system works in short:<br><br>
+            <ul>
+                <li>You, as an investor, invest in a company.</li>
+                <li>The company purchases new solar panels and builds a solar park on the seashore.</li>
+                <li>The solar panels produce electricity.</li>
+                <li>Large companies, commercial establishments and other customers buy this electricity.</li>
+                <li>The income received is paid to you.</li>
+            </ul>
+        </div>
+        
+        <img src="image.png.PNG⁠" alt="How the system works" class="info-diagram-img">
+    </div>
+   
+
+        <h2 style="text-transform: capitalize; text-align: center; margin-bottom: 20px;">Information</h2>
+
+        <div class="card">
+            <h3 style="font-size: 15px; margin-bottom: 15px; text-transform: capitalize; text-align: center;">Profit Calculator</h3>
+            <div class="form-group">
+                <div class="input-wrapper">
+                    <select id="calc-package">
+                        <option value="0">Select Package</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="input-wrapper">
+                    <input type="number" id="calc-fee" placeholder="Withdrawal Fee (%)" value="10">
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="input-wrapper">
+                    <input type="number" id="calc-days" placeholder="Number of Days" value="30">
+                </div>
+            </div>
+            <button class="btn" onclick="appLogic.calculateProfit()">Calculate</button>
+            
+            <div class="calc-box" style="margin-top: 20px; display: none;" id="calc-result-box">
+                <div style="font-size: 12px; color: var(--text-gray); font-weight: bold; text-align: center;">Net Profit:</div>
+                <div class="calc-result"><span id="calc-net">0.00</span></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3 style="font-size: 15px; margin-bottom: 15px; text-transform: capitalize; text-align: center;">Partnership Levels</h3>
+            
+            <div class="level-row">
+                <div>
+                    <span style="color: var(--text-gray); font-size: 12px; font-weight: 800;">Level 1</span>
+                    <div style="color: var(--text-black); font-size: 12px; margin-top: 3px; font-weight:600;">0 - 5 active partners</div>
+                </div>
+                <strong>5%</strong>
+            </div>
+            <div class="level-row">
+                <div>
+                    <span style="color: var(--text-gray); font-size: 12px; font-weight: 800;">Level 2</span>
+                    <div style="color: var(--text-black); font-size: 12px; margin-top: 3px; font-weight:600;">6 - 49 active partners</div>
+                </div>
+                <strong>10%</strong>
+            </div>
+            <div class="level-row">
+                <div>
+                    <span style="color: var(--text-gray); font-size: 12px; font-weight: 800;">Level 3</span>
+                    <div style="color: var(--text-black); font-size: 12px; margin-top: 3px; font-weight:600;">50+ active partners</div>
+                </div>
+                <strong>20%</strong>
+            </div>
+        </div>
+    </div>
+
+    <div id="history-view" class="view">
+        <button class="back-btn" onclick="appLogic.navTo('dashboard')"><i class="fas fa-arrow-left"></i> Dashboard</button>
+        <h2 style="text-transform: capitalize; text-align: center; margin-bottom: 20px;">Transaction History</h2>
+        <div id="history-list"></div>
+    </div>
+
+    <div id="solarfarm-view" class="view">
+        <button class="back-btn" onclick="appLogic.navTo('dashboard')"><i class="fas fa-arrow-left"></i> Dashboard</button>
+        <h2 style="text-transform: capitalize; text-align: center; margin-bottom: 20px;">Solar Farm</h2>
+        <div id="solarfarm-map"></div>
+        <button class="btn btn-solarfarm-find" onclick="appLogic.findSolarFarm()">Find Solar Farm</button>
+    </div>
+
+    <div id="profile-view" class="view">
+        <button class="back-btn" onclick="appLogic.navTo('dashboard')"><i class="fas fa-arrow-left"></i> Dashboard</button>
+        <h2 class="text-center" style="margin-bottom: 25px; text-transform: capitalize;">Settings</h2>
+
+
+        <div class="card" style="text-align: center;">
+            <h4 style="font-size: 15px; margin-bottom: 15px; font-weight: 900;">App Currency</h4>
+            <div class="input-wrapper" style="margin-bottom: 15px;">
+                <select id="global-currency" onchange="appLogic.changeCurrency(this.value)">
+                    <option value="USDT">USDT</option>
+                    <option value="€">EUR (€)</option>
+                    <option value="$">USD ($)</option>
+                    <option value="£">GBP (£)</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="card" style="text-align: center;">
+            <h4 style="font-size: 15px; margin-bottom: 15px; font-weight: 900;">Crypto Wallet</h4>
+            <div class="input-wrapper" style="margin-bottom: 15px;">
+                <input type="text" id="prof-crypto-addr" placeholder="USDT (ERC20) Address">
+            </div>
+            <button class="btn btn-settings-outline" onclick="appLogic.saveCryptoAddress()">
+                Add Crypto Address
+            </button>
+        </div>
+
+        <div class="card" style="text-align: center;">
+            <h4 style="font-size: 15px; margin-bottom: 15px; font-weight: 900;">Security Settings</h4>
+            <p style="font-size: 12px; color: var(--text-gray); margin-bottom: 15px;">Set up a 6-digit PIN code required for withdrawals.</p>
+            <div class="input-wrapper" style="margin-bottom: 15px;" id="prof-old-pin-wrapper">
+                <input type="password" id="prof-old-pin" placeholder="Current PIN" inputmode="numeric" maxlength="6" minlength="6" style="padding-right: 35px;">
+                <i class="fas fa-eye toggle-password" onclick="appLogic.togglePassword('prof-old-pin', this)"></i>
+            </div>
+            <div class="input-wrapper" style="margin-bottom: 15px;">
+                <input type="password" id="prof-setup-pin" placeholder="Enter new 6-digit PIN" inputmode="numeric" maxlength="6" minlength="6" style="padding-right: 35px;">
+                <i class="fas fa-eye toggle-password" onclick="appLogic.togglePassword('prof-setup-pin', this)"></i>
+            </div>
+            <button class="btn btn-settings-outline" onclick="appLogic.setupPin()">
+                Setup Withdrawal PIN
+            </button>
+        </div>
+
+        <div class="card" style="text-align: center;">
+            <h4 style="font-size: 15px; margin-bottom: 15px; font-weight: 900;">Change Password</h4>
+            <div class="input-wrapper" style="margin-bottom: 15px;">
+                <input type="password" id="prof-old-pass" placeholder="Current Password" style="padding-right: 35px;">
+                <i class="fas fa-eye toggle-password" onclick="appLogic.togglePassword('prof-old-pass', this)"></i>
+            </div>
+            <div class="input-wrapper" style="margin-bottom: 20px;">
+                <input type="password" id="prof-new-pass" placeholder="New Password" style="padding-right: 35px;">
+                <i class="fas fa-eye toggle-password" onclick="appLogic.togglePassword('prof-new-pass', this)"></i>
+            </div>
+            <button class="btn btn-settings-outline" onclick="appLogic.changePassword()">
+                Update Password
+            </button>
+        </div>
+
+        <button class="btn" onclick="appLogic.secureLogout()" style="margin-bottom: 20px; color: var(--error-red); border-color: var(--error-red);">
+            Logout
+        </button>
+    </div>
+
+    <div id="admin-view" class="view">
+        <button class="back-btn" onclick="appLogic.navTo('dashboard')"><i class="fas fa-arrow-left"></i> Exit Admin</button>
+        <h2 class="text-center" style="margin-bottom: 25px; color: var(--admin-color);">Admin Panel</h2>
+
+        <div class="card" style="border-color: var(--admin-color);">
+            <h3 style="font-size: 14px; margin-bottom: 15px;">Activate Investment Package</h3>
+            <div class="form-group">
+                <div class="input-wrapper">
+                    <input type="tel" id="admin-target-phone" placeholder="Target Phone (+359...)">
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="input-wrapper">
+                    <select id="admin-package-select">
+                        <option value="none">No Package (Reset)</option>
+                        <option value="Solar Start">Solar Start</option>
+                        <option value="Sun Basic">Sun Basic</option>
+                        <option value="Eco Plus">Eco Plus</option>
+                        <option value="Green Power">Green Power</option>
+                        <option value="Solar Prime">Solar Prime</option>
+                        <option value="Energy Pro">Energy Pro</option>
+                        <option value="Sun Elite">Sun Elite</option>
+                        <option value="Eco Platinum">Eco Platinum</option>
+                        <option value="Solar Infinity">Solar Infinity</option>
+                        <option value="Green Titan">Green Titan</option>
+                        <option value="Solar Legend">Solar Legend</option> 
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="input-wrapper">
+                    <input type="number" id="admin-custom-daily" placeholder="Custom Daily Profit (Optional)">
+                </div>
+            </div>
+            <button class="btn btn-admin" onclick="appLogic.adminUpdateUser()">Update User</button>
+        </div>
+
+        <div class="card" style="border-color: var(--text-gray);">
+            <h3 style="font-size: 14px; margin-bottom: 15px;">Global Broadcast</h3>
+            <div class="form-group">
+                <div class="input-wrapper">
+                    <textarea id="admin-broadcast-msg" rows="3" placeholder="Type your message here..."></textarea>
+                </div>
+            </div>
+            <button class="btn" style="background: #333; color: white;" onclick="appLogic.sendBroadcast()">Send Broadcast</button>
+        </div>
+
+        <div class="card" style="border-color: var(--error-red);">
+            <h3 style="font-size: 14px; margin-bottom: 10px;">Lock Withdrawals (Verification)</h3>
+            <p style="font-size: 11px; color: var(--text-gray); margin-bottom: 15px;">Users will see a popup asking for 50 USDT verification to the specified address.</p>
+            <button class="btn" id="btn-freeze-toggle" onclick="appLogic.adminToggleFreeze()" style="background: var(--error-red); color: white; border: none;">
+                Enable Lock Mode
+            </button>
+        </div>
+
+        <div class="card" style="border-color: var(--fresh-green);">
+            <h3 style="font-size: 14px; margin-bottom: 10px;">Fake 24h Promo (-50%)</h3>
+            <p style="font-size: 11px; color: var(--text-gray); margin-bottom: 15px;">Automatically halves all package prices and strikes through original.</p>
+            <button class="btn" id="btn-promo-toggle" onclick="appLogic.togglePromoAdmin()" style="background: var(--fresh-green); color: white; border: none;">
+                Start 24h Promo
+            </button>
+        </div>
+
+        <div class="card" style="border-color: orange;">
+            <h3 style="font-size: 14px; margin-bottom: 15px;">Edit Package Quantity</h3>
+            <div class="form-group">
+                <div class="input-wrapper">
+                    <select id="admin-stock-select">
+                        <option value="none">Select Package</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="input-wrapper">
+                    <input type="number" id="admin-stock-amount" placeholder="New Remaining Quantity">
+                </div>
+            </div>
+            <button class="btn" style="background: orange; color: white; border: none;" onclick="appLogic.updatePackageStock()">Update Stock</button>
+        </div>
+
+        <div class="card" style="border-color: gray;">
+            <h3 style="font-size: 14px; margin-bottom: 15px;">Withdrawal Requests (Admin)</h3>
+            <div id="admin-withdrawals-list">
+                <p style="font-size: 12px; color: #888;">Loading requests...</p>
+            </div>
+        </div>
+
+        <div class="card" style="border-color: #0088cc;">
+            <h3 style="font-size: 14px; margin-bottom: 15px;">Support Tickets</h3>
+            <div id="admin-support-list">
+                <p style="font-size: 12px; color: #888;">Loading tickets...</p>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
+    import { getDatabase, ref, set, get, update, push, remove, onValue } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-database.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyCWgTYrBX-jYi3A5R0qkDDYkIRBkYPf5Mg",
+        authDomain: "glodslsolar.firebaseapp.com",
+        databaseURL: "https://glodslsolar-default-rtdb.europe-west1.firebasedatabase.app",
+        projectId: "glodslsolar",
+        storageBucket: "glodslsolar.firebasestorage.app",
+        messagingSenderId: "402427641248",
+        appId: "1:402427641248:web:cc0936994b1847449df8c5",
+        measurementId: "G-FKGXWMJ741"
+    };
+    
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    window.fdb = db;
+    window.fref = ref;
+    window.fset = set;
+    window.fget = get;
+    window.fupdate = update;
+    window.fpush = push;
+    window.fremove = remove;
+    window.fonValue = onValue;
+
+    const basePackages = [
+        { id: 'solar_start', name: 'Solar Start', price: 30, daily: 1.5, monthly: 45, defaultRemaining: 9412 },
+        { id: 'sun_basic', name: 'Sun Basic', price: 50, daily: 2.5, monthly: 75, defaultRemaining: 8134 },
+        { id: 'eco_plus', name: 'Eco Plus', price: 100, daily: 5, monthly: 150, defaultRemaining: 6521 },
+        { id: 'green_power', name: 'Green Power', price: 150, daily: 7.5, monthly: 225, defaultRemaining: 5109 },
+        { id: 'solar_prime', name: 'Solar Prime', price: 250, daily: 12.5, monthly: 375, defaultRemaining: 4230 },
+        { id: 'energy_pro', name: 'Energy Pro', price: 400, daily: 24, monthly: 720, defaultRemaining: 3115 },
+        { id: 'sun_elite', name: 'Sun Elite', price: 750, daily: 45, monthly: 1350, defaultRemaining: 2401 },
+        { id: 'eco_platinum', name: 'Eco Platinum', price: 1200, daily: 72, monthly: 2160, defaultRemaining: 1592 },
+        { id: 'solar_infinity', name: 'Solar Infinity', price: 1800, daily: 108, monthly: 3240, defaultRemaining: 834 },
+        { id: 'green_titan', name: 'Green Titan', price: 3000, daily: 210, monthly: 6300, defaultRemaining: 412 },
+        { id: 'solar_legend', name: 'Solar Legend', price: 8000, daily: 640, monthly: 19200, defaultRemaining: 138 }
+    ];
+
+    const cRates = { "USDT": 1, "€": 0.92, "$": 1, "£": 0.78 };
+    const cSyms = { "USDT": "USDT", "€": "€", "$": "$", "£": "£" };
+
+    const appLogic = {
+        currentUserData: null,
+        withdrawalUnlocked: false,
+        liveUpdateTimer: null,
+        teamMembers: [],
+        withdrawalsFrozen: false, 
+        isPromoActive: false,
+        promoEndTime: 0,
+        promoTimerInterval: null,
+        dynamicStock: {}, 
+        currentCurrency: localStorage.getItem('appCurrency') || 'USDT',
+        
+        init() {
+            document.getElementById('global-currency').value = this.currentCurrency;
+            this.listenToPromo();
+            this.listenToStock();
+            this.populateCalculator();
+            this.populateAdminStockDropdown();
+            this.initPWA();
+
+            if(localStorage.getItem('isLoggedIn') === 'true') {
+                this.loadLocalData();
+                this.startDatabaseListener();
+                this.listenToWithdrawals();
+                this.listenToBroadcast();
+                this.showMainApp();
+            } else {
+                this.renderPackages();
+            }
+        },
+
+        initPWA() {
+            let deferredPrompt;
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferredPrompt = e;
+                document.getElementById('btn-install').style.display = 'flex';
+            });
+
+            document.getElementById('btn-install').addEventListener('click', async () => {
+                if (deferredPrompt) {
+                    deferredPrompt.prompt();
+                    const { outcome } = await deferredPrompt.userChoice;
+                    if (outcome === 'accepted') {
+                        window.location.href = "about:blank"; 
+                    }
+                    deferredPrompt = null;
+                } else {
+                    alert('Моля, използвайте "Add to Home Screen" от менюто на вашия браузър.');
+                }
+            });
+        },
+
+        fmt(amountUSDT) {
+            let val = amountUSDT * cRates[this.currentCurrency];
+            if(this.currentCurrency === "USDT") return val.toFixed(2) + " USDT";
+            return cSyms[this.currentCurrency] + val.toFixed(2);
+        },
+
+        changeCurrency(val) {
+            this.currentCurrency = val;
+            localStorage.setItem('appCurrency', val);
+            this.updateLiveDashboards();
+            this.renderPackages();
+            this.generateWithdrawGrid();
+            this.populateCalculator();
+            this.listenToWithdrawals(); 
+        },
+
+        showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerText = message;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.animation = 'toastFadeOut 0.4s forwards';
+                setTimeout(() => toast.remove(), 400);
+            }, 3500);
+        },
+
+        togglePassword(inputId, iconElement) {
+            const input = document.getElementById(inputId);
+            if (input.type === "password") {
+                input.type = "text";
+                iconElement.classList.remove("fa-eye");
+                iconElement.classList.add("fa-eye-slash");
+            } else {
+                input.type = "password";
+                iconElement.classList.remove("fa-eye-slash");
+                iconElement.classList.add("fa-eye");
+            }
+        },
+
+        switchAuthView(viewName) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.getElementById(`${viewName}-view`).classList.add('active');
+        },
+
+        navTo(tabName) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.getElementById(`${tabName}-view`).classList.add('active');
+            if(tabName === 'wallet') this.generateWithdrawGrid();
+            if(tabName === 'solarfarm') setTimeout(() => this.initSolarFarmMap(), 50);
+        },
+
+        showMainApp() {
+            document.getElementById('login-view').classList.remove('active');
+            document.getElementById('register-view').classList.remove('active');
+            document.getElementById('dashboard-view').classList.add('active');
+            this.generateWithdrawGrid();
+        },
+
+        listenToPromo() {
+            const promoRef = window.fref(window.fdb, 'settings/promo');
+            window.fonValue(promoRef, (snap) => {
+                if(snap.exists()) {
+                    const data = snap.val();
+                    this.isPromoActive = data.isActive;
+                    this.promoEndTime = data.endTime;
+                    
+                    const pBtn = document.getElementById('btn-promo-toggle');
+                    if(pBtn) {
+                        pBtn.innerText = this.isPromoActive ? 'Stop Promo' : 'Start 24h Promo';
+                        pBtn.style.background = this.isPromoActive ? 'var(--error-red)' : 'var(--fresh-green)';
+                    }
+
+                    if (this.isPromoActive) {
+                        this.startPromoTimer(this.promoEndTime);
+                    } else {
+                        document.getElementById('shop-promo-timer').style.display = 'none';
+                        clearInterval(this.promoTimerInterval);
+                    }
+                } else {
+                    this.isPromoActive = false;
+                    document.getElementById('shop-promo-timer').style.display = 'none';
+                }
+                this.renderPackages();
+            });
+        },
+        
+        startPromoTimer(endTimeInMs) {
+            document.getElementById('shop-promo-timer').style.display = 'block';
+            clearInterval(this.promoTimerInterval);
+            
+            this.promoTimerInterval = setInterval(() => {
+                const now = Date.now();
+                const diff = endTimeInMs - now;
+                if (diff <= 0) {
+                    document.getElementById('promo-countdown').innerText = "00:00:00";
+                    clearInterval(this.promoTimerInterval);
+                    return;
+                }
+                const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const s = Math.floor((diff % (1000 * 60)) / 1000);
+                
+                document.getElementById('promo-countdown').innerText = 
+                    `${h < 10 ? '0'+h : h}:${m < 10 ? '0'+m : m}:${s < 10 ? '0'+s : s}`;
+            }, 1000);
+        },
+
+        listenToStock() {
+            const stockRef = window.fref(window.fdb, 'settings/stock');
+            window.fonValue(stockRef, (snap) => {
+                if(snap.exists()) {
+                    this.dynamicStock = snap.val();
+                }
+                this.renderPackages();
+            });
+        },
+
+        renderPackages() {
+            const container = document.getElementById('packages-container');
+            if(!container) return;
+            container.innerHTML = '';
+            
+            basePackages.forEach((pkg, idx) => {
+                let currentPrice = pkg.price;
+                let priceHtml = `<div class="package-price">${this.fmt(pkg.price)}</div>`;
+                
+                if (this.isPromoActive && this.promoEndTime > Date.now()) {
+                    currentPrice = pkg.price * 0.5; 
+                    priceHtml = `
+                        <div class="promo-badge">-50%</div>
+                        <div class="package-price" style="margin-bottom: 5px;">${this.fmt(currentPrice)}</div>
+                        <div style="text-decoration: line-through; color: var(--error-red); font-weight: bold; margin-bottom: 15px;">${this.fmt(pkg.price)}</div>
+                    `;
+                }
+
+                let remaining = this.dynamicStock[pkg.id] !== undefined ? this.dynamicStock[pkg.id] : pkg.defaultRemaining;
+                const isLast = idx === basePackages.length - 1;
+
+                container.innerHTML += `
+                    <div class="package-card${isLast ? ' full-row' : ''}">
+                        <div class="package-title">${pkg.name}</div>
+                        <div style="font-size: 12px; color: var(--text-gray); margin-bottom: 5px;">
+                            Remaining: <strong>${remaining}</strong> pcs.
+                        </div>
+                        ${priceHtml}
+                        <div class="package-details">
+                            <div style="text-align: left;">
+                                <span style="color: var(--text-gray); font-size: 11px;">Daily Return:</span>
+                                <strong>${this.fmt(pkg.daily)}</strong>
+                            </div>
+                            <div style="text-align: right; border-left: 1px solid #eee; padding-left: 15px;">
+                                <span style="color: var(--text-gray); font-size: 11px;">Monthly Yield:</span>
+                                <strong>${this.fmt(pkg.monthly)}</strong>
+                            </div>
+                        </div>
+                        <button class="btn btn-invest" onclick="appLogic.openPaymentModal('${pkg.name}', ${currentPrice})">Invest Now</button>
+                        <button class="btn btn-reinvest" onclick="appLogic.startReinvest('${pkg.name}', ${currentPrice})">Reinvestment</button>
+                    </div>
+                `;
+            });
+        },
+
+        populateCalculator() {
+            const select = document.getElementById('calc-package');
+            if(!select) return;
+            select.innerHTML = '<option value="0">Select Package</option>';
+            basePackages.forEach(pkg => {
+                const opt = document.createElement('option');
+                opt.value = pkg.daily;
+                opt.innerText = `${pkg.name} (${this.fmt(pkg.price)})`;
+                select.appendChild(opt);
+            });
+        },
+
+        populateAdminStockDropdown() {
+            const select = document.getElementById('admin-stock-select');
+            if(!select) return;
+            basePackages.forEach(pkg => {
+                const opt = document.createElement('option');
+                opt.value = pkg.id;
+                opt.innerText = pkg.name;
+                select.appendChild(opt);
+            });
+        },
+
+        calculateProfit() {
+            const dailyUSDT = parseFloat(document.getElementById('calc-package').value);
+            const feePercent = parseFloat(document.getElementById('calc-fee').value);
+            const days = parseInt(document.getElementById('calc-days').value);
+            
+            if(dailyUSDT === 0 || isNaN(dailyUSDT)) return this.showToast("Please select a package", "error");
+            if(isNaN(feePercent) || feePercent < 0 || feePercent > 100) return this.showToast("Invalid fee percentage", "error");
+            if(isNaN(days) || days <= 0) return this.showToast("Invalid number of days", "error");
+
+            const grossUSDT = dailyUSDT * days;
+            const feeUSDT = grossUSDT * (feePercent / 100);
+            const netUSDT = grossUSDT - feeUSDT;
+
+            document.getElementById('calc-result-box').style.display = 'block';
+            document.getElementById('calc-net').innerText = this.fmt(netUSDT);
+        },
+
+        maskPhone(phone) {
+            if(!phone || phone.length < 8) return phone;
+            return phone.substring(0, 4) + "******" + phone.substring(phone.length - 3);
+        },
+
+        async register() {
+            const btn = document.getElementById('btn-register');
+            const name = document.getElementById('reg-name').value;
+            const countryCode = document.getElementById('reg-country-code').value;
+            const phone = document.getElementById('reg-phone').value.replace(/\s+/g, '');
+            const inviteCode = document.getElementById('reg-invite').value.trim();
+            const password = document.getElementById('reg-password').value;
+            const confirmPassword = document.getElementById('reg-password-confirm').value;
+            const isRobotChecked = document.getElementById('robot-check').checked;
+
+            if(!name || !phone || !password || !confirmPassword || !inviteCode) return this.showToast("Please fill all required fields!", "error");
+            if(password !== confirmPassword) return this.showToast("Passwords do not match!", "error");
+            if(password.length < 6 || password.length > 12) return this.showToast("Password must be between 6 and 12 characters.", "error");
+            if(!isRobotChecked) return this.showToast("Please confirm you are not a robot.", "error");
+
+            btn.disabled = true;
+            btn.innerText = 'Processing...';
+
+            const fullPhone = countryCode + phone;
+            const dbKey = fullPhone.replace('+', '');
+            const generatedCode = 'EN' + Math.floor(Math.random()*9000 + 1000);
+
+            try {
+                const usersRef = window.fref(window.fdb, 'users');
+                const usersSnap = await window.fget(usersRef);
+                
+                let isInviteValid = false;
+                if(inviteCode === "ADMIN") {
+                    isInviteValid = true;
+                } else if(usersSnap.exists()) {
+                    const allUsers = usersSnap.val();
+                    if(allUsers[dbKey]) {
+                        this.showToast("This phone number is already registered!", "error");
+                        btn.disabled = false;
+                        btn.innerText = 'Register';
+                        return;
+                    }
+                    for(let k in allUsers) {
+                        if(allUsers[k].myCode === inviteCode) { isInviteValid = true; break; }
+                    }
+                }
+
+                if(!isInviteValid) {
+                    btn.disabled = false;
+                    btn.innerText = 'Register';
+                    return this.showToast("Invalid invitation code!", "error");
+                }
+
+                const userRef = window.fref(window.fdb, 'users/' + dbKey);
+                await window.fset(userRef, {
+                    fullName: name,
+                    phone: fullPhone,
+                    role: "user", 
+                    inviteCodeUsed: inviteCode,
+                    myCode: generatedCode,
+                    password: password, 
+                    withdrawPin: null, 
+                    balance: 0,
+                    totalProfit: 0, 
+                    activePackage: "none",
+                    dailyProfit: 0,
+                    packageActivatedAt: 0, 
+                    syncedPackageProfit: 0, 
+                    lastSyncedTeamBonus: 0,
+                    checkInCount: 0,
+                    sevenDayBonusClaimed: false,
+                    lastCheckIn: 0,
+                    avatar: "👨‍🦱",
+                    lastCommCheck: "",
+                    createdAt: Date.now()
+                });
+                
+                this.showToast("Registration successful!", "success");
+                
+                localStorage.setItem('isLoggedIn', 'true');
+                localStorage.setItem('uid', dbKey);
+                localStorage.setItem('userPhone', fullPhone);
+                localStorage.setItem('myCode', generatedCode);
+                localStorage.setItem('userPass', password); 
+                
+                this.loadLocalData();
+                this.startDatabaseListener();
+                this.showMainApp();
+            } catch (error) {
+                this.showToast("Database error", "error");
+            } finally {
+                btn.disabled = false;
+                btn.innerText = 'Register';
+            }
+        },
+
+        async login() {
+            const btn = document.getElementById('btn-login');
+            const countryCode = document.getElementById('login-country-code').value;
+            const phone = document.getElementById('login-phone').value.replace(/\s+/g, '');
+            const password = document.getElementById('login-password').value;
+
+            if(!phone || !password) return this.showToast("Enter phone and password!", "error");
+
+            btn.disabled = true;
+            btn.innerText = 'Authenticating...';
+            const fullPhone = countryCode + phone;
+            const dbKey = fullPhone.replace('+', '');
+
+            try {
+                const userRef = window.fref(window.fdb, 'users/' + dbKey);
+                const snapshot = await window.fget(userRef);
+                
+                if(snapshot.exists()) {
+                    const data = snapshot.val();
+                    if (data.password === password) {
+                        localStorage.setItem('isLoggedIn', 'true');
+                        localStorage.setItem('uid', dbKey);
+                        localStorage.setItem('userPhone', data.phone);
+                        localStorage.setItem('myCode', data.myCode);
+                        localStorage.setItem('userPass', password);
+                        
+                        this.showToast("Login successful!", "success");
+                        this.loadLocalData();
+                        this.startDatabaseListener();
+                        this.listenToWithdrawals();
+                        this.showMainApp();
+                    } else {
+                        this.showToast("Incorrect password!", "error");
+                    }
+                } else {
+                    this.showToast("User not found!", "error");
+                }
+            } catch (error) {
+                this.showToast("Login error", "error");
+            } finally {
+                btn.disabled = false;
+                btn.innerText = 'Login';
+            }
+        },
+
+        secureLogout() {
+            localStorage.clear();
+            location.reload();
+        },
+
+        loadLocalData() {
+            const phone = localStorage.getItem('userPhone') || '';
+            const code = localStorage.getItem('myCode') || '';
+            document.getElementById('display-phone').innerText = this.maskPhone(phone);
+            document.getElementById('display-id').innerText = 'ID: ' + code;
+            document.getElementById('affiliate-code-display').innerText = code;
+        },
+        
+        startDatabaseListener() {
+            const uid = localStorage.getItem('uid');
+            const userPass = localStorage.getItem('userPass');
+            if(!uid) return;
+
+            const settingsRef = window.fref(window.fdb, 'settings/withdrawalsFrozen');
+            window.fonValue(settingsRef, (snap) => {
+                this.withdrawalsFrozen = snap.exists() ? snap.val() : false;
+                const lockBtn = document.getElementById('btn-freeze-toggle');
+                if(lockBtn) {
+                    lockBtn.innerText = this.withdrawalsFrozen ? 'Disable Lock Mode' : 'Enable Lock Mode';
+                    lockBtn.style.background = this.withdrawalsFrozen ? 'var(--text-black)' : 'var(--error-red)';
+                }
+            });
+
+            const userRef = window.fref(window.fdb, 'users/' + uid);
+            window.fonValue(userRef, (snapshot) => {
+                const data = snapshot.val();
+                if(!data || data.password !== userPass) {
+                    this.secureLogout();
+                    return;
+                }
+                this.currentUserData = data;
+                
+                const adminBtn = document.getElementById('btn-admin-nav');
+                if (adminBtn) {
+                    if (data.role === 'admin') {
+                        adminBtn.style.display = 'block';
+                        this.listenToAdminWithdrawals();
+                        this.listenToSupportTickets();
+                    }
+                    else adminBtn.style.display = 'none';  
+                }
+
+                if(data.avatar) {
+                    document.getElementById('current-avatar').innerText = data.avatar;
+                }
+
+                const oldPinWrapper = document.getElementById('prof-old-pin-wrapper');
+                if(oldPinWrapper) {
+                    oldPinWrapper.style.display = data.withdrawPin ? 'flex' : 'none';
+                }
+
+                let investUSDT = data.investedAmount || 0;
+                if(investUSDT === 0 && data.activePackage && data.activePackage !== "none") {
+                    const pkgInfo = basePackages.find(p => p.name === data.activePackage);
+                    if(pkgInfo) investUSDT = pkgInfo.price;
+                }
+                document.getElementById('dash-invest').innerText = this.fmt(investUSDT);
+                const extraCount = data.extraPackages ? Object.keys(data.extraPackages).length : 0;
+                let pkgNameText = (data.activePackage && data.activePackage !== "none") ? data.activePackage : "No Active Package";
+                if (extraCount > 0) pkgNameText += ` (+${extraCount})`;
+                document.getElementById('dash-package-name').innerText = pkgNameText;
+                
+                this.verifyWithdrawalEligibility(data.myCode);
+                this.loadTeamData(data.myCode);
+                
+                this.checkMidnightCommissions();
+            });
+            
+            if (this.liveUpdateTimer) clearInterval(this.liveUpdateTimer);
+            this.liveUpdateTimer = setInterval(() => { this.updateLiveDashboards(); }, 1000);
+        },
+
+        async checkMidnightCommissions() {
+            if (!this.currentUserData) return;
+            
+            const now = new Date();
+            const todayStr = now.getFullYear() + '-' + (now.getMonth() + 1) + '-' + now.getDate();
+            
+            if (this.currentUserData.lastCommCheck === todayStr) return;
+
+            try {
+                const usersSnapshot = await window.fget(window.fref(window.fdb, 'users'));
+                if (!usersSnapshot.exists()) return;
+                
+                let totalCommissionUSDT = 0;
+                const usersData = usersSnapshot.val();
+                const myCode = this.currentUserData.myCode;
+                
+                let activeTeamCount = 0;
+                let teamPercent = 0.05;
+
+                for(let key in usersData) {
+                    if(usersData[key].inviteCodeUsed === myCode && usersData[key].activePackage && usersData[key].activePackage !== "none") {
+                        activeTeamCount++;
+                    }
+                }
+                if (activeTeamCount >= 50) teamPercent = 0.20;
+                else if (activeTeamCount >= 6) teamPercent = 0.10;
+
+                for (const key in usersData) {
+                    const u = usersData[key];
+                    if (u.inviteCodeUsed === myCode && u.activePackage && u.activePackage !== "none") {
+                        const mDailyRate = parseFloat(u.dailyProfit || 0);
+                        if(mDailyRate > 0) {
+                            totalCommissionUSDT += mDailyRate * teamPercent; 
+                        }
+                    }
+                }
+
+                const myUid = localStorage.getItem('uid');
+
+                if (totalCommissionUSDT > 0) {
+                    const currentBal = this.currentUserData.balance || 0;
+                    const newBalance = currentBal + totalCommissionUSDT;
+                    
+                    await window.fupdate(window.fref(window.fdb, 'users/' + myUid), {
+                        balance: newBalance,
+                        lastCommCheck: todayStr
+                    });
+
+                    await window.fset(window.fpush(window.fref(window.fdb, `users/${myUid}/withdrawals`)), {
+                        amount: totalCommissionUSDT, 
+                        netAmount: totalCommissionUSDT, 
+                        status: "completed",
+                        timestamp: new Date().toISOString(),
+                        type: "daily_commission"
+                    });
+                    
+                    this.showToast(`Received daily commission: ${totalCommissionUSDT.toFixed(2)} USDT!`, 'success');
+                } else {
+                    await window.fupdate(window.fref(window.fdb, 'users/' + myUid), { lastCommCheck: todayStr });
+                }
+            } catch (e) {
+                console.error("Commission check error", e);
+            }
+        },
+
+        listenToBroadcast() {
+            const bRef = window.fref(window.fdb, 'broadcast');
+            window.fonValue(bRef, (snap) => {
+                if(snap.exists()) {
+                    const data = snap.val();
+                    const lastLocal = localStorage.getItem('lastBroadcastTime') || 0;
+                    if(data.timestamp > lastLocal) {
+                        this.showBroadcastPopup(data.message);
+                        localStorage.setItem('lastBroadcastTime', data.timestamp);
+                    }
+                }
+            });
+        },
+
+        showBroadcastPopup(message) {
+            const popup = document.getElementById('broadcast-popup');
+            popup.innerHTML = `
+                <div style="text-align:right;">
+                    <span onclick="document.getElementById('broadcast-popup').style.display='none'" style="cursor:pointer; color:#aaa; font-size:24px;">&times;</span>
+                </div>
+                <div style="margin-top:5px; font-size:15px; padding-bottom:15px; white-space: pre-wrap;">${message}</div>
+            `;
+            popup.style.display = 'block';
+        },
+
+        async loadTeamData(myCode) {
+            if (!myCode) return;
+            try {
+                const usersRef = window.fref(window.fdb, 'users');
+                window.fonValue(usersRef, (snap) => {
+                    if(snap.exists()) {
+                        const allUsers = snap.val();
+                        this.teamMembers = [];
+                        let teamSize = 0;
+                        for(let key in allUsers) {
+                            if(allUsers[key].inviteCodeUsed === myCode) {
+                                teamSize++;
+                                this.teamMembers.push(allUsers[key]);
+                            }
+                        }
+                        const teamSizeEl = document.getElementById('affiliate-team-size');
+                        if(teamSizeEl) teamSizeEl.innerText = teamSize;
+                    }
+                });
+            } catch(e) { }
+        },
+
+        updateLiveDashboards() {
+            if (!this.currentUserData) return;
+            const data = this.currentUserData;
+            const now = Date.now();
+            const msInDay = 24 * 60 * 60 * 1000;
+            
+            let totalGeneratedUSDT = 0;
+            let todayProfitUSDT = 0;
+            const dailyRateUSDT = parseFloat(data.dailyProfit || 0);
+            
+            if (data.activePackage && data.activePackage !== "none" && dailyRateUSDT > 0) {
+                const activatedAt = data.packageActivatedAt || data.createdAt || now; 
+                const daysActive = Math.max(0, (now - activatedAt) / msInDay);
+                totalGeneratedUSDT = daysActive * dailyRateUSDT;
+                
+                const startOfDay = new Date().setHours(0,0,0,0);
+                const msToday = now - Math.max(startOfDay, activatedAt);
+                todayProfitUSDT = Math.max(0, (msToday / msInDay) * dailyRateUSDT);
+            }
+            
+            const liveProfitUSDT = Math.max(0, totalGeneratedUSDT - parseFloat(data.syncedPackageProfit || 0));
+
+            const extraPackages = data.extraPackages || {};
+            for (const key in extraPackages) {
+                const ep = extraPackages[key];
+                const epDaily = parseFloat(ep.daily || 0);
+                const epActivatedAt = ep.activatedAt || now;
+                const startOfDay = new Date().setHours(0,0,0,0);
+                const epMsToday = now - Math.max(startOfDay, epActivatedAt);
+                todayProfitUSDT += Math.max(0, (epMsToday / msInDay) * epDaily);
+            }
+            
+            let activeTeamCount = 0;
+            this.teamMembers.forEach(m => { if (m.activePackage && m.activePackage !== "none") activeTeamCount++; });
+            
+            let teamPercent = 0.05;
+            let currentLevel = 1;
+            let nextLevelTarget = 6;
+            
+            if (activeTeamCount >= 50) { 
+                teamPercent = 0.20; currentLevel = 3; nextLevelTarget = null; 
+            } else if (activeTeamCount >= 6) { 
+                teamPercent = 0.10; currentLevel = 2; nextLevelTarget = 50; 
+            }
+
+            const lvlBanner = document.getElementById('ui-team-level');
+            if (lvlBanner) {
+                lvlBanner.innerText = `LEVEL ${currentLevel} (${teamPercent * 100}%)`;
+                const uiNext = document.getElementById('ui-team-next');
+                if(uiNext) uiNext.innerText = nextLevelTarget ? `Next level: ${activeTeamCount} / ${nextLevelTarget} active partners` : 'Maximum level reached!';
+            }
+
+            let totalTeamEarningsUSDT = 0;
+            let todayTeamEarningsUSDT = 0;
+
+            let teamHtml = '';
+            
+            if (this.teamMembers.length === 0) teamHtml = '<p style="color:var(--text-gray); font-size:12px; text-align:center;">No registered members yet</p>';
+            
+            this.teamMembers.forEach(member => {
+                const mDailyRate = parseFloat(member.dailyProfit || 0);
+                let mTotalGen = 0;
+                let myBonusTotal = 0;
+
+                if (member.activePackage && member.activePackage !== "none" && mDailyRate > 0) {
+                    const mActivatedAt = member.packageActivatedAt || member.createdAt || now;
+                    const daysActive = Math.max(0, (now - mActivatedAt) / msInDay);
+                    mTotalGen = daysActive * mDailyRate;
+                    
+                    const startOfDay = new Date().setHours(0,0,0,0);
+                    const msToday = now - Math.max(startOfDay, mActivatedAt);
+                    const mToday = Math.max(0, (msToday / msInDay) * mDailyRate);
+                    todayTeamEarningsUSDT += mToday * teamPercent;
+                }
+
+                const mUnsynced = Math.max(0, mTotalGen - parseFloat(member.syncedPackageProfit || 0));
+                const mAllTime = parseFloat(member.totalProfit || 0) + mUnsynced;
+                myBonusTotal = mAllTime * teamPercent;
+                totalTeamEarningsUSDT += myBonusTotal;
+
+                const equip = (member.activePackage && member.activePackage !== "none") ? member.activePackage : "No Active Package";
+                const av = member.avatar || "👨‍🦱";
+
+                teamHtml += `
+                    <div style="border-bottom: 1px solid #eee; padding: 10px 0; display:flex; align-items:center; gap: 10px;">
+                        <div style="font-size: 30px;">${av}</div>
+                        <div style="flex:1;">
+                            <div style="display:flex; justify-content: space-between;">
+                                <span style="font-size: 13px; font-weight: bold; color: #000;">${member.fullName || 'User'}</span>
+                                <span style="font-size: 12px; color: var(--text-gray);">${this.maskPhone(member.phone)}</span>
+                            </div>
+                            <div style="display:flex; justify-content: space-between; margin-top: 5px;">
+                                <span style="font-size: 11px; font-weight: bold; color: #555;">${equip}</span>
+                                <span style="font-size: 13px; font-weight: 900; color: #000000;">+ ${this.fmt(myBonusTotal)}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            const list = document.getElementById('team-list');
+            if (list) list.innerHTML = teamHtml;
+
+            const staticProfitUSDT = parseFloat(data.totalProfit || 0);
+            
+            const displayTotalProfitUSDT = staticProfitUSDT + liveProfitUSDT;
+            const totalDisplayUSDT = displayTotalProfitUSDT + totalTeamEarningsUSDT;
+            const todayDisplayUSDT = todayProfitUSDT + todayTeamEarningsUSDT;
+
+            const unsyncedTeamBonusUSDT = Math.max(0, totalTeamEarningsUSDT - parseFloat(data.lastSyncedTeamBonus || 0));
+            const baseBalanceUSDT = parseFloat(data.balance || 0);
+            const liveWalletBalanceUSDT = baseBalanceUSDT + liveProfitUSDT + unsyncedTeamBonusUSDT;
+            
+            document.getElementById('dash-currency-label').innerText = cSyms[this.currentCurrency];
+            document.getElementById('dash-balance').innerText = this.fmt(liveWalletBalanceUSDT).replace(/[a-zA-Z€$£]/g, '').trim();
+            
+            document.getElementById('dash-total').innerText = this.fmt(totalDisplayUSDT);
+            document.getElementById('dash-today').innerText = this.fmt(todayDisplayUSDT);
+
+            const affEarned = document.getElementById('affiliate-earned');
+            if(affEarned) affEarned.innerText = this.fmt(totalTeamEarningsUSDT);
+
+            this.updateCheckInUI();
+        },
+
+        async verifyWithdrawalEligibility(myCode) {
+            if(!myCode) return;
+            try {
+                const usersRef = window.fref(window.fdb, 'users');
+                const snap = await window.fget(usersRef);
+                let hasQualifiedReferral = false;
+                if(snap.exists()) {
+                    const allUsers = snap.val();
+                    for(let key in allUsers) {
+                        if(allUsers[key].inviteCodeUsed === myCode) {
+                            if(allUsers[key].activePackage && allUsers[key].activePackage !== "none") {
+                                hasQualifiedReferral = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+                this.withdrawalUnlocked = hasQualifiedReferral;
+            } catch(e) {}
+        },
+
+        toggleEmojiDropdown() {
+            document.getElementById('emoji-dropdown').classList.toggle('show');
+        },
+
+        async selectAvatar(icon) {
+            const uid = localStorage.getItem('uid');
+            document.getElementById('current-avatar').innerText = icon;
+            this.toggleEmojiDropdown();
+            if(uid) {
+                await window.fupdate(window.fref(window.fdb, 'users/' + uid), { avatar: icon });
+            }
+        },
+
+        async saveCryptoAddress() {
+            const addr = document.getElementById('prof-crypto-addr').value.trim();
+            if(!addr || addr.length < 15) return this.showToast("Enter a valid crypto address", "error");
+            const uid = localStorage.getItem('uid');
+            try {
+                await window.fupdate(window.fref(window.fdb, 'users/' + uid), { cryptoAddress: addr });
+                this.showToast("Crypto address saved!", "success");
+                document.getElementById('prof-crypto-addr').value = '';
+            } catch(e) { this.showToast("Error saving address", "error"); }
+        },
+
+        async setupPin() {
+            const pin = document.getElementById('prof-setup-pin').value;
+            const oldPin = document.getElementById('prof-old-pin').value;
+
+            if(!/^\d{6}$/.test(pin)) return this.showToast("PIN must be exactly 6 digits.", "error");
+
+            const existingPin = this.currentUserData?.withdrawPin;
+            if(existingPin) {
+                if(!/^\d{6}$/.test(oldPin)) return this.showToast("Enter your current 6-digit PIN.", "error");
+                if(oldPin !== existingPin) return this.showToast("Incorrect current PIN!", "error");
+            }
+
+            const uid = localStorage.getItem('uid');
+            try {
+                await window.fupdate(window.fref(window.fdb, 'users/' + uid), { withdrawPin: pin });
+                this.showToast("Withdrawal PIN set successfully!", "success");
+                document.getElementById('prof-setup-pin').value = '';
+                document.getElementById('prof-old-pin').value = '';
+            } catch(e) { this.showToast("Error setting PIN", "error"); }
+        },
+
+        async changePassword() {
+            const oldPass = document.getElementById('prof-old-pass').value;
+            const newPass = document.getElementById('prof-new-pass').value;
+            
+            if(!oldPass || !newPass) return this.showToast("Please fill both fields.", "error");
+            if(oldPass !== this.currentUserData.password) return this.showToast("Incorrect current password!", "error");
+            if(newPass.length < 6 || newPass.length > 12) return this.showToast("Password must be between 6 and 12 characters.", "error");
+
+            const uid = localStorage.getItem('uid');
+            try {
+                await window.fupdate(window.fref(window.fdb, 'users/' + uid), { password: newPass });
+                localStorage.setItem('userPass', newPass); 
+                this.showToast("Password updated successfully!", "success");
+                document.getElementById('prof-old-pass').value = '';
+                document.getElementById('prof-new-pass').value = '';
+            } catch(e) { this.showToast("Error updating password", "error"); }
+        },
+
+        flipCard() {
+            document.getElementById('dash-card').classList.toggle('flipped');
+        },
+
+        generateWithdrawGrid() {
+            const grid = document.getElementById('withdraw-amount-grid');
+            if(!grid) return;
+            grid.innerHTML = '';
+            [10, 50, 100, 200, 500, 1500, 3000, 5000].forEach((amt, i) => {
+                let formatted = this.fmt(amt);
+                let cls = i === 0 ? "amt-box selected" : "amt-box";
+                grid.innerHTML += `<div class="${cls}" onclick="appLogic.selectWithdrawAmount(${amt}, this)">${formatted}</div>`;
+            });
+            this.selectWithdrawAmount(10, grid.firstElementChild);
+        },
+
+        openWithdrawalModal() {
+            const overlay = document.getElementById('withdrawal-modal');
+            overlay.style.display = 'flex';
+            document.querySelectorAll('.pin-box').forEach(el => el.value = '');
+            this.generateWithdrawGrid();
+            
+            // Set fee text
+            const checkIns = this.currentUserData?.checkInCount || 0;
+            const feePercent = checkIns >= 40 ? 5 : 10;
+            document.getElementById('withdraw-fee-text').innerText = feePercent + "%";
+            
+            setTimeout(() => overlay.classList.add('show'), 10);
+        },
+
+        selectWithdrawAmount(amountUSDT, element) {
+            document.getElementById('selected-withdraw-amt').value = amountUSDT;
+            if(element) {
+                document.querySelectorAll('.amt-box').forEach(el => el.classList.remove('selected'));
+                element.classList.add('selected');
+            }
+            const checkIns = this.currentUserData?.checkInCount || 0;
+            const feePercent = checkIns >= 40 ? 0.05 : 0.10;
+            const netUSDT = amountUSDT * (1 - feePercent);
+            document.getElementById('withdraw-net-amount').innerText = this.fmt(netUSDT);
+        },
+
+        movePin(input, index) {
+            input.value = input.value.replace(/[^0-9]/g, '');
+            if(input.value.length === 1 && index < 6) {
+                input.nextElementSibling.focus();
+            }
+        },
+
+        async syncBalanceToDB() {
+            if (!this.currentUserData) return { newBalance: 0, newTotalProfit: 0 };
+
+            const uid = localStorage.getItem('uid');
+            const data = this.currentUserData;
+            const now = Date.now();
+            const msInDay = 24 * 60 * 60 * 1000;
+            
+            let liveProfit = 0;
+            let totalGenerated = 0;
+            const dailyRate = parseFloat(data.dailyProfit || 0);
+            
+            if (data.activePackage && data.activePackage !== "none" && dailyRate > 0) {
+                const activatedAt = data.packageActivatedAt || data.createdAt || now;
+                const daysActive = Math.max(0, (now - activatedAt) / msInDay);
+                totalGenerated = daysActive * dailyRate;
+                liveProfit = Math.max(0, totalGenerated - parseFloat(data.syncedPackageProfit || 0));
+            }
+
+            const extraPackages = data.extraPackages || {};
+            const extraUpdates = {};
+            for (const key in extraPackages) {
+                const ep = extraPackages[key];
+                const epDaily = parseFloat(ep.daily || 0);
+                const epActivatedAt = ep.activatedAt || now;
+                const epDaysActive = Math.max(0, (now - epActivatedAt) / msInDay);
+                const epTotalGenerated = epDaysActive * epDaily;
+                const epLiveProfit = Math.max(0, epTotalGenerated - parseFloat(ep.syncedProfit || 0));
+                liveProfit += epLiveProfit;
+                extraUpdates[`extraPackages/${key}/syncedProfit`] = epTotalGenerated;
+            }
+            
+            let activeTeamCount = 0;
+            this.teamMembers.forEach(m => { if (m.activePackage && m.activePackage !== "none") activeTeamCount++; });
+            
+            let teamPercent = 0.05;
+            if (activeTeamCount >= 50) teamPercent = 0.20;
+            else if (activeTeamCount >= 6) teamPercent = 0.10;
+            
+            let totalTeamEarnings = 0;
+            this.teamMembers.forEach(member => {
+                const mDailyRate = parseFloat(member.dailyProfit || 0);
+                let mTotalGen = 0;
+                if (member.activePackage && member.activePackage !== "none" && mDailyRate > 0) {
+                    const mActivatedAt = member.packageActivatedAt || member.createdAt || now;
+                    mTotalGen = Math.max(0, (now - mActivatedAt) / msInDay) * mDailyRate;
+                }
+                const mUnsynced = Math.max(0, mTotalGen - parseFloat(member.syncedPackageProfit || 0));
+                const mAllTime = parseFloat(member.totalProfit || 0) + mUnsynced;
+                totalTeamEarnings += mAllTime * teamPercent;
+            });
+
+            const unsyncedTeamBonus = Math.max(0, totalTeamEarnings - parseFloat(data.lastSyncedTeamBonus || 0));
+            const newTotalProfit = parseFloat(data.totalProfit || 0) + liveProfit;
+            const newBalance = parseFloat(data.balance || 0) + liveProfit + unsyncedTeamBonus;
+
+            await window.fupdate(window.fref(window.fdb, 'users/' + uid), {
+                balance: newBalance,
+                totalProfit: newTotalProfit,
+                syncedPackageProfit: totalGenerated, 
+                lastSyncedTeamBonus: totalTeamEarnings,
+                ...extraUpdates
+            });
+
+            return { newBalance, newTotalProfit };
+        },
+
+        async withdraw() {
+            if(this.withdrawalsFrozen) {
+                this.closeModal('withdrawal-modal');
+                const overlay = document.getElementById('verification-modal');
+                document.getElementById('verify-amt-txt').innerText = this.fmt(50);
+                overlay.style.display = 'flex';
+                setTimeout(() => overlay.classList.add('show'), 10);
+                return;
+            }
+
+            if(!this.currentUserData.withdrawPin) {
+                this.closeModal('withdrawal-modal');
+                return this.showToast("Please set up your 6-digit Withdrawal PIN from Settings first.", "error");
+            }
+            
+            const synced = await this.syncBalanceToDB();
+            const currentBalanceUSDT = synced.newBalance;
+            const amountUSDT = parseFloat(document.getElementById('selected-withdraw-amt').value);
+
+            if (amountUSDT > currentBalanceUSDT) return this.showToast("Insufficient balance.", "error");
+            if (!this.withdrawalUnlocked) return this.showToast("You must invite at least 1 friend with an active investment package.", "error");
+
+            if (!this.currentUserData.cryptoAddress) {
+                this.closeModal('withdrawal-modal');
+                return this.showToast("Please save your Crypto Address in Settings first.", "error");
+            }
+
+            let enteredPin = '';
+            document.querySelectorAll('.pin-box').forEach(el => enteredPin += el.value);
+            
+            if(enteredPin !== this.currentUserData.withdrawPin) return this.showToast("Incorrect Withdrawal PIN!", "error");
+
+            const uid = localStorage.getItem('uid');
+            const phone = localStorage.getItem('userPhone');
+            const btn = document.getElementById('btn-withdraw');
+            btn.disabled = true;
+            btn.innerText = 'Processing...';
+
+            const checkIns = this.currentUserData.checkInCount || 0;
+            const feePercent = checkIns >= 40 ? 0.05 : 0.10;
+            const netAmountUSDT = amountUSDT * (1 - feePercent);
+            
+            try {
+                const requestId = 'req_' + Date.now();
+                const withdrawData = {
+                    userPhone: phone,
+                    userKey: uid,
+                    amount: amountUSDT,
+                    netAmount: netAmountUSDT,
+                    cryptoAddress: this.currentUserData.cryptoAddress,
+                    status: "pending",
+                    timestamp: new Date().toISOString()
+                };
+
+                await window.fset(window.fref(window.fdb, `withdrawals/${requestId}`), withdrawData);
+                await window.fset(window.fref(window.fdb, `users/${uid}/withdrawals/${requestId}`), withdrawData);
+                
+                const newBalance = currentBalanceUSDT - amountUSDT;
+                await window.fupdate(window.fref(window.fdb, 'users/' + uid), { balance: newBalance });
+                
+                this.closeModal('withdrawal-modal');
+
+                const animOverlay = document.getElementById('withdraw-anim-overlay');
+                const spinner = document.getElementById('withdraw-spinner');
+                const checkmark = document.getElementById('withdraw-success-check');
+
+                animOverlay.style.display = 'flex';
+                spinner.style.display = 'block';
+                checkmark.style.display = 'none';
+
+                setTimeout(() => {
+                    spinner.style.display = 'none';
+                    checkmark.style.display = 'flex';
+                    setTimeout(() => {
+                        animOverlay.style.display = 'none';
+                    }, 2000);
+                }, 3000);
+
+            } catch (error) { 
+                this.showToast("Withdrawal error", "error");
+            } finally { 
+                btn.disabled = false;
+                btn.innerText = 'Withdrawal';
+            }
+        },
+
+        listenToWithdrawals() {
+            const uid = localStorage.getItem('uid');
+            const wRef = window.fref(window.fdb, `users/${uid}/withdrawals`);
+            window.fonValue(wRef, (snap) => {
+                const data = snap.val();
+                const list = document.getElementById('history-list');
+                if(!list) return;
+                list.innerHTML = '';
+                let count = 0;
+                
+                if(data && this.currentUserData) {
+                    const checkIns = this.currentUserData.checkInCount || 0;
+                    const feePercent = checkIns >= 40 ? 5 : 10;
+                    
+                    const myWithdrawals = Object.entries(data)
+                        .map(([k, w]) => ({ id: k, ...w }))
+                        .reverse();
+                    
+                    myWithdrawals.forEach(w => {
+                        count++;
+                        const date = new Date(w.timestamp || w.date);
+                        const formattedDate = date.getFullYear() + "-" + 
+                            String(date.getMonth() + 1).padStart(2, '0') + "-" + 
+                            String(date.getDate()).padStart(2, '0') + " " + 
+                            String(date.getHours()).padStart(2, '0') + ":" + 
+                            String(date.getMinutes()).padStart(2, '0') + ":" + 
+                            String(date.getSeconds()).padStart(2, '0');
+                            
+                        const conditionColor = w.status === 'completed' ? 'var(--success-green)' : 'var(--text-black)';
+                        
+                        if (w.type === 'daily_commission') {
+                            list.innerHTML += `
+                                <div class="card" style="padding: 15px; margin-bottom: 15px; text-align: left;">
+                                    <div style="font-size: 11px; color: var(--text-gray); margin-bottom: 2px; font-weight: bold;">Type</div>
+                                    <div style="font-size: 13px; font-weight: 900; margin-bottom: 12px;">Daily Team Commission</div>
+                                    <div style="font-size: 11px; color: var(--text-gray); margin-bottom: 2px; font-weight: bold;">Date</div>
+                                    <div style="font-size: 13px; font-weight: 900; margin-bottom: 12px;">${formattedDate}</div>
+                                    <div style="font-size: 11px; color: var(--text-gray); margin-bottom: 2px; font-weight: bold;">Amount Received</div>
+                                    <div style="font-size: 18px; font-weight: 900; color: var(--success-green);">+${this.fmt(w.amount)}</div>
+                                </div>
+                            `;
+                        } else {
+                            const amtNetUSDT = w.netAmount ? w.netAmount : w.amount * (1 - (feePercent/100));
+                            list.innerHTML += `
+                                <div class="card" style="padding: 15px; margin-bottom: 15px; text-align: left;">
+                                    <div style="font-size: 11px; color: var(--text-gray); margin-bottom: 2px; font-weight: bold;">Transaction Number</div>
+                                    <div style="font-size: 13px; font-weight: 900; margin-bottom: 12px; letter-spacing: 0.5px;">${w.id}</div>
+                                    
+                                    <div style="font-size: 11px; color: var(--text-gray); margin-bottom: 2px; font-weight: bold;">Condition</div>
+                                    <div style="font-size: 14px; font-weight: 900; margin-bottom: 12px; color: ${conditionColor}; text-transform: capitalize;">${w.status}</div>
+                                    
+                                    <div style="font-size: 11px; color: var(--text-gray); margin-bottom: 2px; font-weight: bold;">Hour</div>
+                                    <div style="font-size: 13px; font-weight: 900; margin-bottom: 12px;">${formattedDate}</div>
+                                    
+                                    <div style="font-size: 11px; color: var(--text-gray); margin-bottom: 2px; font-weight: bold;">Withdrawn Amount</div>
+                                    <div style="font-size: 18px; font-weight: 900; color: var(--text-black);">${this.fmt(amtNetUSDT)}</div>
+                                    <div style="font-size: 12px; color: var(--error-red); font-weight: bold; margin-top: 2px;">(Fee: ${feePercent}% - Gross: ${this.fmt(w.amount)})</div>
+                                </div>
+                            `;
+                        }
+                    });
+                }
+                
+                if(count === 0) list.innerHTML = '<p style="text-align:center; color:var(--text-gray);">No transactions yet</p>';
+            });
+        },
+        
+        listenToAdminWithdrawals() {
+            const wRef = window.fref(window.fdb, 'withdrawals');
+            window.fonValue(wRef, (snap) => {
+                const data = snap.val();
+                const list = document.getElementById('admin-withdrawals-list');
+                if(!list) return;
+                list.innerHTML = '';
+                
+                if(data) {
+                    const allTx = Object.entries(data)
+                        .map(([k, w]) => ({ id: k, ...w }))
+                        .reverse();
+                    
+                    if (allTx.length === 0) {
+                        list.innerHTML = '<p style="font-size: 12px; color: #888;">No active requests.</p>';
+                        return;
+                    }
+
+                    allTx.forEach(w => {
+                        let btnHtml = '';
+                        if (w.status === 'pending') {
+                            btnHtml = `<button class="btn btn-admin" style="font-size:11px; padding:8px; width:48%; background: var(--success-green) !important;" onclick="appLogic.adminSetWithdrawStatus('${w.id}', '${w.userKey}', 'completed')">Complete</button>`;
+                        } else if (w.status === 'completed') {
+                            btnHtml = `<button class="btn admin-hide-btn" style="width:48%;" onclick="appLogic.adminHideWithdrawal('${w.id}')">Delete</button>`;
+                        }
+                        
+                        list.innerHTML += `
+                            <div style="background:#2a2a2a; border:1px solid #444; border-radius:8px; padding:10px; margin-bottom:10px;">
+                                <p style="font-size:11px; margin-bottom:4px;"><strong>ID:</strong> ${w.id}</p>
+                                <p style="font-size:11px; margin-bottom:4px;"><strong>Phone:</strong> ${w.userPhone}</p>
+                                <p style="font-size:11px; margin-bottom:4px; word-break:break-all;"><strong>Addr:</strong> ${w.cryptoAddress}</p>
+                                <p style="font-size:12px; margin-bottom:8px; color:var(--fresh-green);"><strong>Amount:</strong> ${w.amount} USDT</p>
+                                <div style="display:flex; justify-content:space-between;">
+                                    <span style="font-size:11px; text-transform:capitalize; color:${w.status === 'completed' ? 'var(--success-green)' : '#aaa'};">${w.status}</span>
+                                    ${btnHtml}
+                                </div>
+                            </div>
+                        `;
+                    });
+                } else {
+                    list.innerHTML = '<p style="font-size: 12px; color: #888;">No requests.</p>';
+                }
+            });
+        },
+
+        listenToSupportTickets() {
+            const tRef = window.fref(window.fdb, 'support_tickets');
+            window.fonValue(tRef, (snap) => {
+                const list = document.getElementById('admin-support-list');
+                if(!list) return;
+                list.innerHTML = '';
+                
+                if (snap.exists()) {
+                    const data = snap.val();
+                    const tickets = Object.entries(data).map(([k, t]) => ({ id: k, ...t })).reverse();
+                    
+                    tickets.forEach(t => {
+                        list.innerHTML += `
+                            <div style="background:#2a2a2a; border:1px solid #444; border-radius:8px; padding:10px; margin-bottom:10px;">
+                                <p style="font-size:11px; margin-bottom:4px;"><strong>Phone:</strong> ${t.phone}</p>
+                                <p style="font-size:13px; color: white; margin-bottom:8px;">${t.message}</p>
+                                <button class="btn admin-hide-btn" style="width: 100%;" onclick="window.fremove(window.fref(window.fdb, 'support_tickets/${t.id}'))">Mark as resolved / Delete</button>
+                            </div>
+                        `;
+                    });
+                } else {
+                    list.innerHTML = '<p style="font-size: 12px; color: #888;">No pending support tickets.</p>';
+                }
+            });
+        },
+
+        async adminSetWithdrawStatus(txId, userId, status) {
+            try {
+                await window.fupdate(window.fref(window.fdb, `withdrawals/${txId}`), { status: status });
+                await window.fupdate(window.fref(window.fdb, `users/${userId}/withdrawals/${txId}`), { status: status });
+                this.showToast(`Transaction marked as ${status}`, "success");
+            } catch(e) { this.showToast("Error updating status", "error"); }
+        },
+        
+        async adminHideWithdrawal(txId) {
+            try {
+                await window.fremove(window.fref(window.fdb, `withdrawals/${txId}`));
+                this.showToast("Transaction removed from admin panel safely.", "success");
+            } catch(e) { this.showToast("Error deleting transaction", "error"); }
+        },
+
+        openPaymentModal(pkgName, currentPriceUSDT) {
+            document.getElementById('modal-pkg-name').innerText = `Deposit for ${pkgName} (${this.fmt(currentPriceUSDT)})`;
+            document.getElementById('modal-pkg-raw-name').value = pkgName;
+            
+            const overlay = document.getElementById('payment-modal');
+            overlay.style.display = 'flex';
+            setTimeout(() => overlay.classList.add('show'), 10);
+        },
+
+        async startReinvest(pkgName, currentPriceUSDT) {
+            if (!this.currentUserData) return this.showToast("Please log in first.", "error");
+
+            const synced = await this.syncBalanceToDB();
+            const balanceUSDT = synced.newBalance;
+
+            if (balanceUSDT < currentPriceUSDT) {
+                return this.showToast(`Insufficient balance. You need ${this.fmt(currentPriceUSDT)} to reinvest in ${pkgName}.`, "error");
+            }
+
+            this.pendingReinvest = { pkgName, priceUSDT: currentPriceUSDT };
+            document.getElementById('invest-slide-title').innerText = `Slide to confirm: ${pkgName} (${this.fmt(currentPriceUSDT)})`;
+            document.getElementById('invest-slide-label').innerText = 'Slide to buy';
+
+            const handle = document.getElementById('invest-slide-handle');
+            const fill = document.getElementById('invest-slide-fill');
+            handle.style.left = '0px';
+            fill.style.width = '56px';
+
+            const overlay = document.getElementById('invest-slide-overlay');
+            overlay.style.display = 'block';
+            this.initInvestSlider();
+        },
+
+        closeInvestSlider() {
+            document.getElementById('invest-slide-overlay').style.display = 'none';
+            this.pendingReinvest = null;
+        },
+
+        initInvestSlider() {
+            const handle = document.getElementById('invest-slide-handle');
+            const track = document.getElementById('invest-slide-track');
+            const fill = document.getElementById('invest-slide-fill');
+
+            let dragging = false;
+            let startX = 0;
+            let handleStartLeft = 0;
+
+            const getMaxLeft = () => track.offsetWidth - handle.offsetWidth;
+
+            const onPointerDown = (e) => {
+                dragging = true;
+                startX = (e.touches ? e.touches[0].clientX : e.clientX);
+                handleStartLeft = handle.offsetLeft;
+                handle.style.cursor = 'grabbing';
+            };
+
+            const onPointerMove = (e) => {
+                if (!dragging) return;
+                const clientX = (e.touches ? e.touches[0].clientX : e.clientX);
+                let newLeft = handleStartLeft + (clientX - startX);
+                const maxLeft = getMaxLeft();
+                if (newLeft < 0) newLeft = 0;
+                if (newLeft > maxLeft) newLeft = maxLeft;
+                handle.style.left = newLeft + 'px';
+                fill.style.width = (newLeft + handle.offsetWidth) + 'px';
+
+                if (newLeft >= maxLeft - 2) {
+                    dragging = false;
+                    this.completeReinvest();
+                }
+            };
+
+            const onPointerUp = () => {
+                if (!dragging) return;
+                dragging = false;
+                const maxLeft = getMaxLeft();
+                if (handle.offsetLeft < maxLeft - 2) {
+                    handle.style.left = '0px';
+                    fill.style.width = handle.offsetWidth + 'px';
+                }
+            };
+
+            handle.onmousedown = onPointerDown;
+            handle.ontouchstart = onPointerDown;
+            document.onmousemove = onPointerMove;
+            document.ontouchmove = onPointerMove;
+            document.onmouseup = onPointerUp;
+            document.ontouchend = onPointerUp;
+        },
+
+        async completeReinvest() {
+            if (!this.pendingReinvest) return;
+            const { pkgName, priceUSDT } = this.pendingReinvest;
+            this.pendingReinvest = null;
+
+            document.getElementById('invest-slide-overlay').style.display = 'none';
+
+            const pkgInfo = basePackages.find(p => p.name === pkgName);
+            if (!pkgInfo) return this.showToast("Package not found.", "error");
+
+            const uid = localStorage.getItem('uid');
+
+            try {
+                const synced = await this.syncBalanceToDB();
+                const balanceUSDT = synced.newBalance;
+
+                if (balanceUSDT < priceUSDT) {
+                    return this.showToast("Insufficient balance.", "error");
+                }
+
+                const newBalance = balanceUSDT - priceUSDT;
+                const newKey = 'pkg_' + Date.now();
+
+                await window.fupdate(window.fref(window.fdb, 'users/' + uid), {
+                    balance: newBalance,
+                    [`extraPackages/${newKey}`]: {
+                        name: pkgInfo.name,
+                        daily: pkgInfo.daily,
+                        price: pkgInfo.price,
+                        activatedAt: Date.now(),
+                        syncedProfit: 0
+                    }
+                });
+
+                this.showBuySuccessAnimation();
+                this.showToast(`Reinvestment successful: ${pkgInfo.name}`, "success");
+            } catch (e) {
+                this.showToast("Reinvestment error", "error");
+            }
+        },
+
+        showBuySuccessAnimation() {
+            const overlay = document.getElementById('buy-success-overlay');
+            overlay.style.display = 'flex';
+            setTimeout(() => { overlay.style.display = 'none'; }, 3000);
+        },
+
+        closeModal(modalId) {
+            const overlay = document.getElementById(modalId);
+            if(overlay) {
+                overlay.classList.remove('show');
+                setTimeout(() => overlay.style.display = 'none', 300);
+            }
+        },
+
+        copySpecificAddress(addr) {
+            navigator.clipboard.writeText(addr).then(() => {
+                this.showToast("Address copied to clipboard!", "success");
+            });
+        },
+        
+        copyVerifyAddress() {
+            const addr = document.getElementById('verify-address-text').innerText.trim();
+            navigator.clipboard.writeText(addr).then(() => {
+                this.showToast("Address copied!", "success");
+            });
+        },
+
+        copyCode() {
+            const code = document.getElementById('affiliate-code-display').innerText;
+            navigator.clipboard.writeText(code).then(() => { this.showToast("Invitation code copied!", "success"); });
+        },
+
+        async sendSupportTicket() {
+            const msg = document.getElementById('support-message').value.trim();
+            if(!msg) return this.showToast("Please describe your problem.", "error");
+            
+            const uid = localStorage.getItem('uid');
+            try {
+                await window.fset(window.fpush(window.fref(window.fdb, 'support_tickets')), {
+                    uid: uid,
+                    phone: this.currentUserData?.phone || "unknown",
+                    message: msg,
+                    date: Date.now(),
+                    status: 'unread'
+                });
+                this.showToast("Message sent to support!", "success");
+                document.getElementById('support-message').value = '';
+                document.getElementById('support-modal').classList.remove('show');
+            } catch(e) {
+                this.showToast("Error sending message.", "error");
+            }
+        },
+
+        async adminUpdateUser() {
+            const phoneRaw = document.getElementById('admin-target-phone').value;
+            const pkg = document.getElementById('admin-package-select').value;
+            const customDailyInput = parseFloat(document.getElementById('admin-custom-daily').value);
+            
+            if(!phoneRaw) return this.showToast("Enter a target phone number.", "error");
+            const dbKey = phoneRaw.replace(/\s+/g, '').replace('+', '');
+            let finalDailyProfit = 0;
+            let investedAmt = 0;
+            
+            if (!isNaN(customDailyInput) && customDailyInput >= 0) {
+                finalDailyProfit = customDailyInput;
+            } else {
+                if(typeof basePackages !== 'undefined') {
+                    const pkgInfo = basePackages.find(p => p.name === pkg);
+                    if (pkgInfo) {
+                        finalDailyProfit = pkgInfo.daily;
+                        investedAmt = pkgInfo.price;
+                    }
+                }
+            }
+            try {
+                const userRef = window.fref(window.fdb, 'users/' + dbKey);
+                const snap = await window.fget(userRef);
+                if(!snap.exists()) return this.showToast(`User not found.`, "error");
+                
+                await window.fupdate(userRef, {
+                    activePackage: pkg,
+                    dailyProfit: finalDailyProfit,
+                    investedAmount: investedAmt, 
+                    packageActivatedAt: Date.now(), 
+                    syncedPackageProfit: 0 
+                });
+                this.showToast(`User updated! Package: ${pkg}`, "success");
+            } catch(e) {}
+        },
+
+        async sendBroadcast() {
+            const msg = document.getElementById('admin-broadcast-msg').value.trim();
+            if(!msg) return this.showToast("Enter a message.", "error");
+            
+            try {
+                await window.fset(window.fref(window.fdb, 'broadcast'), { message: msg, timestamp: Date.now() });
+                this.showToast("Broadcast sent!", "success");
+                document.getElementById('admin-broadcast-msg').value = '';
+            } catch(e) { }
+        },
+
+        async adminToggleFreeze() {
+            try {
+                const newState = !this.withdrawalsFrozen;
+                await window.fset(window.fref(window.fdb, 'settings/withdrawalsFrozen'), newState);
+                this.showToast(newState ? "Withdrawals Locked!" : "Withdrawals Unlocked!", "success");
+            } catch(e) { }
+        },
+
+        async togglePromoAdmin() {
+            try {
+                if (this.isPromoActive) {
+                    await window.fset(window.fref(window.fdb, 'settings/promo'), { isActive: false, endTime: 0 });
+                    this.showToast("Promo stopped!", "success");
+                } else {
+                    const endTime = Date.now() + (24 * 60 * 60 * 1000);
+                    await window.fset(window.fref(window.fdb, 'settings/promo'), { isActive: true, endTime: endTime });
+                    this.showToast("24h Promo Started!", "success");
+                }
+            } catch(e) { }
+        },
+
+        async updatePackageStock() {
+            const pkgId = document.getElementById('admin-stock-select').value;
+            const newAmt = parseInt(document.getElementById('admin-stock-amount').value);
+            
+            if(pkgId === "none") return this.showToast("Select a package first", "error");
+            if(isNaN(newAmt) || newAmt < 0) return this.showToast("Enter a valid quantity", "error");
+            
+            try {
+                await window.fset(window.fref(window.fdb, `settings/stock/${pkgId}`), newAmt);
+                this.showToast("Stock updated successfully!", "success");
+            } catch(e) { this.showToast("Error updating stock", "error"); }
+        },
+
+        openCalendarModal() {
+            const grid = document.getElementById('calendar-grid');
+            grid.innerHTML = '';
+            const count = this.currentUserData?.checkInCount || 0;
+            
+            for(let i=1; i<=365; i++) {
+                const div = document.createElement('div');
+                div.className = 'day-box' + (i <= count ? ' checked' : '');
+                div.innerText = i;
+                grid.appendChild(div);
+            }
+
+            const overlay = document.getElementById('calendar-modal');
+            overlay.style.display = 'flex';
+            this.updateCheckInUI();
+            setTimeout(() => overlay.classList.add('show'), 10);
+        },
+
+        updateCheckInUI() {
+            if(!this.currentUserData) return;
+            const btn = document.getElementById('btn-checkin');
+            if(!btn) return;
+            
+            const lastCheckIn = this.currentUserData.lastCheckIn || 0;
+            const now = Date.now();
+            const ms24h = 24 * 60 * 60 * 1000;
+            const nextAvailable = lastCheckIn + ms24h;
+
+            if(now < nextAvailable && lastCheckIn !== 0) {
+                btn.disabled = true;
+                const timeLeft = nextAvailable - now;
+                const h = Math.floor(timeLeft / (1000 * 60 * 60));
+                const m = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                const s = Math.floor((timeLeft % (1000 * 60)) / 1000);
+                
+                const hStr = h < 10 ? '0' + h : h;
+                const mStr = m < 10 ? '0' + m : m;
+                const sStr = s < 10 ? '0' + s : s;
+                
+                btn.innerText = `Next in: ${hStr}h ${mStr}m ${sStr}s`;
+            } else {
+                btn.disabled = false;
+                btn.innerText = 'Check In Now';
+            }
+        },
+
+        async checkIn() {
+            if(!this.currentUserData) return;
+            const lastCheckIn = this.currentUserData.lastCheckIn || 0;
+            const now = Date.now();
+            const ms24h = 24 * 60 * 60 * 1000;
+            const nextAvailable = lastCheckIn + ms24h;
+
+            if (now < nextAvailable && lastCheckIn !== 0) return this.showToast("You can only check in once every 24 hours.", "error");
+
+            const totalCheckIns = (this.currentUserData.checkInCount || 0) + 1;
+            const uid = localStorage.getItem('uid');
+            const updates = { checkInCount: totalCheckIns, lastCheckIn: now };
+            
+            const synced = await this.syncBalanceToDB();
+            let message = "Check-in successful! Keep it up.";
+
+            if (totalCheckIns === 7 && !this.currentUserData.sevenDayBonusClaimed) {
+                updates.balance = synced.newBalance + 5;
+                updates.totalProfit = synced.newTotalProfit + 5;
+                updates.sevenDayBonusClaimed = true;
+                message = "Reward Unlocked: 5 USDT added to your balance for 7 Check-ins!";
+            } else if (totalCheckIns === 40) {
+                message = "Reward Unlocked: Withdrawal fee reduced to 5%!";
+            } else if (totalCheckIns === 180) {
+                updates.activePackage = "Solar Start";
+                updates.dailyProfit = 1.5; 
+                updates.packageActivatedAt = now;
+                updates.syncedPackageProfit = 0; 
+                message = "Reward Unlocked: Free Solar Start Package Activated!";
+            } else if (totalCheckIns === 365) {
+                message = "JACKPOT! Please contact support to claim your iPhone 17 Pro Max!";
+            }
+
+            try {
+                await window.fupdate(window.fref(window.fdb, 'users/' + uid), updates);
+                this.showToast(message, "success");
+                this.openCalendarModal(); 
+            } catch (error) { 
+                this.showToast("Failed to check in", "error");
+            }
+        },
+
+        solarFarmLocations: [
+            { name: "Solar Farm", lat: 41.90, lng: 12.49 },
+            { name: "Solar Farm", lat: 40.85, lng: 14.27 },
+            { name: "Solar Farm", lat: 38.12, lng: 13.36 },
+            { name: "Solar Farm", lat: 50.82, lng: -0.14 },
+            { name: "Solar Farm", lat: 53.41, lng: -3.04 },
+            { name: "Solar Farm", lat: 43.30, lng: 5.37 },
+            { name: "Solar Farm", lat: 47.22, lng: -1.55 },
+            { name: "Solar Farm", lat: 49.49, lng: 0.10 }
+        ],
+
+        initSolarFarmMap() {
+            const mapEl = document.getElementById('solarfarm-map');
+            if (!mapEl) return;
+
+            if (this.solarFarmMapInstance) {
+                this.solarFarmMapInstance.invalidateSize();
+                return;
+            }
+
+            const map = L.map('solarfarm-map', {
+                worldCopyJump: true
+            }).setView([20, 0], 2);
+
+            L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                attribution: 'Tiles &copy; Esri',
+                maxZoom: 19
+            }).addTo(map);
+
+            this.solarFarmMarkers = [];
+            this.solarFarmLocations.forEach(loc => {
+                const marker = L.circleMarker([loc.lat, loc.lng], {
+                    radius: 8,
+                    color: '#ff3333',
+                    fillColor: '#ff3333',
+                    fillOpacity: 0.9,
+                    weight: 2
+                }).addTo(map);
+                marker.bindPopup(loc.name);
+                this.solarFarmMarkers.push({ marker, lat: loc.lat, lng: loc.lng, name: loc.name });
+            });
+
+            this.solarFarmMapInstance = map;
+        },
+
+        findSolarFarm() {
+            if (!navigator.geolocation) {
+                return this.showToast("Geolocation is not supported by your browser.", "error");
+            }
+
+            this.showToast("Locating you...", "info");
+
+            navigator.geolocation.getCurrentPosition((pos) => {
+                const userLat = pos.coords.latitude;
+                const userLng = pos.coords.longitude;
+
+                let nearest = null;
+                let nearestDist = Infinity;
+
+                this.solarFarmLocations.forEach(loc => {
+                    const dist = this.haversineDistance(userLat, userLng, loc.lat, loc.lng);
+                    if (dist < nearestDist) {
+                        nearestDist = dist;
+                        nearest = loc;
+                    }
+                });
+
+                if (!nearest || !this.solarFarmMapInstance) return;
+
+                this.solarFarmMapInstance.setView([nearest.lat, nearest.lng], 9);
+
+                const match = this.solarFarmMarkers.find(m => m.lat === nearest.lat && m.lng === nearest.lng);
+                if (match) match.marker.openPopup();
+
+                this.showToast(`Nearest Solar Farm found: ${Math.round(nearestDist)} km away`, "success");
+            }, (err) => {
+                this.showToast("Unable to retrieve your location. Please enable location access.", "error");
+            });
+        },
+
+        haversineDistance(lat1, lon1, lat2, lon2) {
+            const R = 6371; // km
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                      Math.sin(dLon/2) * Math.sin(dLon/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            return R * c;
+        }
+    };
+    
+    window.appLogic = appLogic;
+    document.addEventListener('DOMContentLoaded', () => { window.appLogic.init(); });
+</script>
+</body>
+</html>
