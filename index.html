@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>⚡️Solar Farm⚡️</title>
+    <title>Solar Farm ⚡️</title>
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -786,7 +786,7 @@
             <div class="phone-group">
                 <div class="input-wrapper phone-code">
                     <select id="login-country-code">
-                        <option value="+359" selected>+359 (Bulgaria 🇧🇬)</option>
+                <option value="+359" selected>+359 (Bulgaria 🇧🇬)</option>
                         <option value="+43">+43 (Austria 🇦🇹)</option>
                         <option value="+32">+32 (Belgium 🇧🇪)</option>
                         <option value="+385">+385 (Croatia 🇭🇷)</option>
@@ -857,7 +857,7 @@
             <div class="phone-group">
                 <div class="input-wrapper phone-code">
                     <select id="reg-country-code">
-                        <option value="+359" selected>+359 (Bulgaria 🇧🇬)</option>
+                       <option value="+359" selected>+359 (Bulgaria 🇧🇬)</option>
                         <option value="+43">+43 (Austria 🇦🇹)</option>
                         <option value="+32">+32 (Belgium 🇧🇪)</option>
                         <option value="+385">+385 (Croatia 🇭🇷)</option>
@@ -927,15 +927,15 @@
             <div class="avatar-wrapper">
                 <div class="profile-avatar-circle" onclick="appLogic.toggleEmojiDropdown()" id="current-avatar">👨‍🦱</div>
                 <div class="emoji-dropdown" id="emoji-dropdown">
-                    <div class="emoji-item" onclick="appLogic.selectAvatar('🧔🏻‍♂️')">🧔🏻‍♂️</div>
+                    <div class="emoji-item" onclick="appLogic.selectAvatar('👨🏻‍🦱')">👨🏻‍🦱</div>
                     <div class="emoji-item" onclick="appLogic.selectAvatar('👩🏼‍🦱')">👩🏼‍🦱</div>
-                    <div class="emoji-item" onclick="appLogic.selectAvatar('🧔🏼‍♂️')">🧔🏼‍♂️</div>
-                    <div class="emoji-item" onclick="appLogic.selectAvatar('👩🏻')">👩🏻</div>
+                    <div class="emoji-item" onclick="appLogic.selectAvatar('👨🏻‍🦲')">👨🏻‍🦲</div>
+                    <div class="emoji-item" onclick="appLogic.selectAvatar('👱🏻‍♀️')">👱🏻‍♀️</div>
                     <div class="emoji-item" onclick="appLogic.selectAvatar('👴🏻')">👴🏻</div>
                     <div class="emoji-item" onclick="appLogic.selectAvatar('👵🏻')">👵🏻</div>
-                    <div class="emoji-item" onclick="appLogic.selectAvatar('👱🏼‍♂️')">👱🏼‍♂️</div>
-                    <div class="emoji-item" onclick="appLogic.selectAvatar('👩🏻‍💻')"👩🏻‍💻</div>
-                    <div class="emoji-item" onclick="appLogic.selectAvatar('🧑🏻‍🦱')">🧑🏻‍🦱</div>
+                    <div class="emoji-item" onclick="appLogic.selectAvatar('👩🏻‍💻')">👩🏻‍💻</div>
+                    <div class="emoji-item" onclick="appLogic.selectAvatar('🧔🏼‍♂️')">🧔🏼‍♂️</div>
+                    <div class="emoji-item" onclick="appLogic.selectAvatar('👩🏻‍💼')">👩🏻‍💼</div>
                     <div class="emoji-item" onclick="appLogic.selectAvatar('👤')">👤</div>
                 </div>
             </div>
@@ -1820,7 +1820,7 @@
                     checkInCount: 0,
                     sevenDayBonusClaimed: false,
                     lastCheckIn: 0,
-                    avatar: "👤",
+                    avatar: "👨‍🦱",
                     lastCommCheck: "",
                     createdAt: Date.now()
                 });
@@ -2159,7 +2159,7 @@
                 totalTeamEarningsUSDT += myBonusTotal;
 
                 const equip = (member.activePackage && member.activePackage !== "none") ? member.activePackage : "No Active Package";
-                const av = member.avatar || "👤";
+                const av = member.avatar || "👨‍🦱";
 
                 teamHtml += `
                     <div style="border-bottom: 1px solid #eee; padding: 10px 0; display:flex; align-items:center; gap: 10px;">
